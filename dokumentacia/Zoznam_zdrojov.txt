@@ -1,0 +1,7 @@
+https://learn.microsoft.com/en-us/aspnet/core/get-started?view=aspnetcore-9.0
+https://learn.microsoft.com/en-us/ef/core/
+https://nextjs.org/docs
+
+https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
+https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
+https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
