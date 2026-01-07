@@ -10,6 +10,13 @@
 		<GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Compile Remove="Models\**" />
+	  <Content Remove="Models\**" />
+	  <EmbeddedResource Remove="Models\**" />
+	  <None Remove="Models\**" />
+	</ItemGroup>
+
   <ItemGroup>
 	<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.11" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
@@ -23,14 +30,13 @@
 	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
 	<PackageReference Include="Scalar.AspNetCore" Version="2.11.0" />
   </ItemGroup>
-
-  <ItemGroup>
-	<Folder Include="Migrations\" />
-	<Folder Include="Models\" />
-  </ItemGroup>
   
   <ItemGroup>
 	<ProjectReference Include="..\backend.ServiceDefaults\backend.ServiceDefaults.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
   
 

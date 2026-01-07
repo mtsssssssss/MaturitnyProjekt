@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace backend.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDb : Migration
+    public partial class Database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -14,9 +14,15 @@ namespace backend.Migrations
             migrationBuilder.EnsureSchema(
                 name: "questions");
 
+            migrationBuilder.EnsureSchema(
+                name: "subjects");
+
+            migrationBuilder.EnsureSchema(
+                name: "tests");
+
             migrationBuilder.CreateTable(
                 name: "subject",
-                schema: "questions",
+                schema: "subjects",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -29,43 +35,36 @@ namespace backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "abcd_question",
-                schema: "questions",
+                name: "test",
+                schema: "tests",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuestionText = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_abcd_question", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_abcd_question_subject_SubjectId",
-                        column: x => x.SubjectId,
-                        principalSchema: "questions",
-                        principalTable: "subject",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_test", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "writing_question",
+                name: "question",
                 schema: "questions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuestionText = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    QuestionText = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Answer = table.Column<string>(type: "text", nullable: false)
+                    QuestionType = table.Column<int>(type: "integer", nullable: false),
+                    Answer = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_writing_question", x => x.Id);
+                    table.PrimaryKey("PK_question", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_writing_question_subject_SubjectId",
+                        name: "FK_question_subject_SubjectId",
                         column: x => x.SubjectId,
-                        principalSchema: "questions",
+                        principalSchema: "subjects",
                         principalTable: "subject",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -85,19 +84,40 @@ namespace backend.Migrations
                 {
                     table.PrimaryKey("PK_abcd_question_answer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_abcd_question_answer_abcd_question_AbcdQuestionId",
+                        name: "FK_abcd_question_answer_question_AbcdQuestionId",
                         column: x => x.AbcdQuestionId,
                         principalSchema: "questions",
-                        principalTable: "abcd_question",
+                        principalTable: "question",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_abcd_question_SubjectId",
-                schema: "questions",
-                table: "abcd_question",
-                column: "SubjectId");
+            migrationBuilder.CreateTable(
+                name: "test_question",
+                schema: "tests",
+                columns: table => new
+                {
+                    TestId = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuestionId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_test_question", x => new { x.TestId, x.QuestionId });
+                    table.ForeignKey(
+                        name: "FK_test_question_question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalSchema: "questions",
+                        principalTable: "question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_test_question_test_TestId",
+                        column: x => x.TestId,
+                        principalSchema: "tests",
+                        principalTable: "test",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_abcd_question_answer_AbcdQuestionId",
@@ -106,10 +126,16 @@ namespace backend.Migrations
                 column: "AbcdQuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_writing_question_SubjectId",
+                name: "IX_question_SubjectId",
                 schema: "questions",
-                table: "writing_question",
+                table: "question",
                 column: "SubjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_test_question_QuestionId",
+                schema: "tests",
+                table: "test_question",
+                column: "QuestionId");
         }
 
         /// <inheritdoc />
@@ -120,16 +146,20 @@ namespace backend.Migrations
                 schema: "questions");
 
             migrationBuilder.DropTable(
-                name: "writing_question",
+                name: "test_question",
+                schema: "tests");
+
+            migrationBuilder.DropTable(
+                name: "question",
                 schema: "questions");
 
             migrationBuilder.DropTable(
-                name: "abcd_question",
-                schema: "questions");
+                name: "test",
+                schema: "tests");
 
             migrationBuilder.DropTable(
                 name: "subject",
-                schema: "questions");
+                schema: "subjects");
         }
     }
 }

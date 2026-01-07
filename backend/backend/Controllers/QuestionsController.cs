@@ -11,22 +11,22 @@ namespace backend.Controllers;
 [ApiController]
 public sealed class QuestionsController : ControllerBase
 {
-    private QuestionsService questionService;
+    private readonly QuestionsService questionService;
 
     public QuestionsController(QuestionsService questionService)
     {
         this.questionService = questionService;
     }
 
-
+    /*
     [HttpPost]
-    public ActionResult<Question> CreateQuestion([FromBody] CreateQuestionDto dto)
+    public ActionResult<Question> CreateQuestion([FromBody] QuestionDto dto)
     {
 
         var question = questionService.CreateQuestion(dto);
 
         return Ok(question);
     }
- 
+ */
     
 }

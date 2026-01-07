@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using backend.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -12,29 +13,34 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Subject> Subjects { get; set; }
-    public DbSet<AbcdQuestion> AbcdQuestions { get; set; }
-    public DbSet<WritingQuestion> WritingQuestions { get; set; }
+    public DbSet<Question> Questions { get; set; }
     public DbSet<AbcdQuestionAnswer> AbcdQuestionAnswers { get; set; }
+    public DbSet<Test> Tests { get; set; }
+    public DbSet<TestQuestion> TestQuestions { get; set; }
 
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // Table-per-concrete-type configuration - vytvori pre kazdy datovy typ vlastnu tabulku - nebude miesat
-        // https://learn.microsoft.com/en-us/ef/core/modeling/inheritance\ - link na dokumentaciu
-
-        modelBuilder.Entity<Question>().UseTpcMappingStrategy();
+        // TPH
+        // https://learn.microsoft.com/en-us/ef/core/modeling/inheritance#table-per-hierarchy-and-discriminator-configuration - link na dokumentaciu
 
 
         modelBuilder.Entity<Subject>()
             .Property(x => x.SubjectAbbrev)
             .HasColumnType("char(3)");
 
+        // Question TPH konfuiguracia
+        modelBuilder.Entity<Question>()
+            .HasDiscriminator<QuestionType>("QuestionType")
+            .HasValue<AbcdQuestion>(QuestionType.Abcd)
+            .HasValue<WritingQuestion>(QuestionType.Writing);
+
 
         modelBuilder.Entity<Question>()
             .HasOne(q => q.Subject)
-            .WithMany()
+            .WithMany(q => q.Questions)
             .HasForeignKey(q => q.SubjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
@@ -44,51 +50,64 @@ public class AppDbContext : DbContext
             .WithMany(q => q.AbcdQuestionAnswers)
             .HasForeignKey(fk => fk.AbcdQuestionId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+
+
+        modelBuilder.Entity<TestQuestion>()
+            .HasKey(tq => new { tq.TestId, tq.QuestionId }); // kompozite key 
+
+
+        modelBuilder.Entity<TestQuestion>()
+            .HasOne(tq => tq.Test)
+            .WithMany(t => t.TestQuestions)
+            .HasForeignKey(tq => tq.TestId);
+
+
+        modelBuilder.Entity<TestQuestion>()
+            .HasOne(tq => tq.Question)
+            .WithMany(q => q.TestQuestions)
+            .HasForeignKey(tq => tq.QuestionId);
     }
-    
+
 }
 
-[Table("subject", Schema = "questions")]
-public sealed class Subject
+public enum QuestionType
 {
-    [Key]
-    public Guid Id { get; set; }
-
-    [MaxLength(100)]
-    public required string SubjectName { get; set; } = string.Empty;
-
-    public required string SubjectAbbrev { get; set; } = string.Empty;
-
+    Abcd = 1,
+    Writing = 2
 }
 
-
+[Table("question", Schema = "questions")]
 public abstract class Question
 {
     [Key]
     public Guid Id { get; set; } 
 
-    [MaxLength(500)]
+    [MaxLength(1000)]
+    [Required]
     public required string QuestionText { get; set; }
     
 
     // Subject - FK
-    public required Guid SubjectId { get; set; }
+    public Guid SubjectId { get; set; }
     public Subject Subject { get; set; } = null!;
 
+    // Tests - FK
+    public ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
 }
 
 
-[Table("abcd_question", Schema = "questions")]
 public sealed class AbcdQuestion : Question
 {       
-    public ICollection<AbcdQuestionAnswer>? AbcdQuestionAnswers { get; set; } = new List<AbcdQuestionAnswer>();
+    public ICollection<AbcdQuestionAnswer> AbcdQuestionAnswers { get; set; } = new List<AbcdQuestionAnswer>();
 }
 
 
-[Table("writing_question", Schema = "questions")]
 public sealed class WritingQuestion : Question
 {
-    public required string Answer { get; set; } = string.Empty;
+    [Required]
+    public string Answer { get; set; } = string.Empty;
 }
 
 
@@ -97,8 +116,12 @@ public sealed class AbcdQuestionAnswer
 {
     [Key]
     public Guid Id { get; set; }
-    public required string Answer { get; set; } = string.Empty;
-    public required bool IsRight { get; set; }
+
+    [Required]
+    public  string Answer { get; set; } = string.Empty;
+
+    [Required]
+    public bool IsRight { get; set; }
 
     // AbcdQuestion - FK
     public Guid AbcdQuestionId { get; set; }

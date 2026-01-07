@@ -53,8 +53,11 @@ namespace backend.Migrations
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<int>("QuestionType")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
@@ -63,12 +66,14 @@ namespace backend.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable((string)null);
+                    b.ToTable("question", "questions");
 
-                    b.UseTpcMappingStrategy();
+                    b.HasDiscriminator<int>("QuestionType");
+
+                    b.UseTphMappingStrategy();
                 });
 
-            modelBuilder.Entity("backend.Data.Subject", b =>
+            modelBuilder.Entity("backend.Entities.Subject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,14 +90,45 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("subject", "questions");
+                    b.ToTable("subject", "subjects");
+                });
+
+            modelBuilder.Entity("backend.Entities.Test", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("test", "tests");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestQuestion", b =>
+                {
+                    b.Property<Guid>("TestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TestId", "QuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("test_question", "tests");
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestion", b =>
                 {
                     b.HasBaseType("backend.Data.Question");
 
-                    b.ToTable("abcd_question", "questions");
+                    b.ToTable("question", "questions");
+
+                    b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("backend.Data.WritingQuestion", b =>
@@ -103,7 +139,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ToTable("writing_question", "questions");
+                    b.ToTable("question", "questions");
+
+                    b.HasDiscriminator().HasValue(2);
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestionAnswer", b =>
@@ -119,13 +157,47 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Data.Question", b =>
                 {
-                    b.HasOne("backend.Data.Subject", "Subject")
-                        .WithMany()
+                    b.HasOne("backend.Entities.Subject", "Subject")
+                        .WithMany("Questions")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestQuestion", b =>
+                {
+                    b.HasOne("backend.Data.Question", "Question")
+                        .WithMany("TestQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Entities.Test", "Test")
+                        .WithMany("TestQuestions")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Test");
+                });
+
+            modelBuilder.Entity("backend.Data.Question", b =>
+                {
+                    b.Navigation("TestQuestions");
+                });
+
+            modelBuilder.Entity("backend.Entities.Subject", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("backend.Entities.Test", b =>
+                {
+                    b.Navigation("TestQuestions");
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestion", b =>

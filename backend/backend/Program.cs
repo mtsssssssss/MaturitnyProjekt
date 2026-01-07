@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-
 builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -16,8 +15,12 @@ builder.Services.AddOpenApi();
 // CORS pre NextJS frontend
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0
 builder.Services.AddCors(opt =>
-    opt.AddPolicy("frontend", policy => {
-        policy.WithOrigins("localhost:3000");
+    opt.AddPolicy("frontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); ;
     })
 );
 
@@ -51,7 +54,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); };
+app.UseRouting();
+
+if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); }
+;
 
 app.UseAuthorization();
 

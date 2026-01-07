@@ -1,4 +1,5 @@
-﻿using backend.Data;
+﻿using System.Reflection.Metadata.Ecma335;
+using backend.Data;
 using backend.DTO;
 
 namespace backend.Services;
@@ -11,58 +12,75 @@ public sealed class QuestionsService
     {
         this.dbContext = dbContext;
     }
-
-    public Question CreateQuestion(CreateQuestionDto dto)
+    /*
+    public QuestionDto CreateQuestion(QuestionDto dto)
     {
-        Question question;
 
-        switch (dto.QuestionType)
+        string writingQuestionAnswer = null;
+        var abcdQuestionanswer = new List<AbcdQuestionAnswer>();
+        
+        if(dto.QuestionType == QuestionType.Writing)
         {
-            case QuestionType.ABCD:
-                if (dto.AbcdAnswers == null || !dto.AbcdAnswers.Any())
-                    throw new Exception("ABCD otázka musí mať odpovede.");
+            dto.
+        }
+        
+        var question = new Question 
+        { 
+            QuestionText = dto.QuestionText,
+            SubjectId = dto.SubjectId,
 
-                var abcdQuestion = new AbcdQuestion
+            
+
+        };
+    
+
+        
+        Question question1 = dto.QuestionType switch
+        {
+            QuestionType.Abcd => new AbcdQuestion
+            {
+                QuestionText = dto.QuestionText,
+                SubjectId = dto.SubjectId,
+                AbcdQuestionAnswers = dto.AbcdAnswers?.Select(a => new AbcdQuestionAnswer
                 {
-                    QuestionText = dto.QuestionText,
-                    SubjectId = dto.SubjectId,
-                };
+                    Answer = a.Answer,
+                    IsRight = a.IsRight
+                }).ToList() ?? new List<AbcdQuestionAnswer>()
+            },
+            QuestionType.Writing => new WritingQuestion
+            {
+                QuestionText = dto.QuestionText,
+                SubjectId = dto.SubjectId,
+                Answer = dto.Answer ?? throw new Exception("Writing otázka musí mať odpoveď.")
+            },
+            _ => throw new Exception("Typ otázky neexistuje.")
+        };
 
-                foreach (var a in dto.AbcdAnswers)
-                {
-                    abcdQuestion.AbcdQuestionAnswers!.Add(new AbcdQuestionAnswer
-                    {
-                        Answer = a.Answer,
-                        IsRight = a.IsRight,
-                        AbcdQuestion = abcdQuestion,
-                    });
-                }
+        // Overenie, že ABCD má odpovede
+        if (question is AbcdQuestion aq)
+        {
+            if (!aq.AbcdQuestionAnswers.Any())
+                throw new Exception("ABCD otázka musí mať odpovede.");
 
-                question = abcdQuestion;
-                break;
-
-
-            case QuestionType.WRITING:
-                if (string.IsNullOrWhiteSpace(dto.Answer))
-                    throw new Exception("Writing otázka musí mať odpoveď.");
-
-                var writingQuestion = new WritingQuestion
-                {
-                    QuestionText = dto.QuestionText,
-                    SubjectId = dto.SubjectId,
-                    Answer = dto.Answer,
-                };
-                question = writingQuestion;
-                break;
-
-            default:
-                throw new Exception("Typ otazky neexistuje.");
-                
+            if (aq.AbcdQuestionAnswers.Count(a => a.IsRight) != 1)
+                throw new Exception("ABCD otázka musí mať **presne jednu správnu odpoveď**.");
         }
 
         dbContext.Add(question);
         dbContext.SaveChanges();
 
-        return question;
-    }
+        return new QuestionDto
+        {
+            // Id = question.Id,
+            QuestionText = question.QuestionText,
+            SubjectId = question.SubjectId,
+            QuestionType = question.QuestionType,
+            Answer = (question as WritingQuestion)?.Answer,
+            AbcdAnswers = (question as AbcdQuestion)?.AbcdQuestionAnswers
+                .Select(a => new AbcdAnswerDto { Answer = a.Answer, IsRight = a.IsRight })
+                .ToList()
+        };
+    }*/
+
+
 }

@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/aspire/">
+    <Project Path="backend.AppHost/backend.AppHost.csproj" />
+    <Project Path="backend.ServiceDefaults/backend.ServiceDefaults.csproj" />
+  </Folder>
+  <Project Path="backend/backend.csproj" />
+</Solution>
