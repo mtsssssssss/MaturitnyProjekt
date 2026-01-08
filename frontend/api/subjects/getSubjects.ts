@@ -1,10 +1,6 @@
 import api from "@/api/axios";
+import { Subject } from "@/types/subject";
 
-type Subject = {
-    id: string,
-    subjectName: string,
-    subjectAbbrev: string,
-}
 
 export const getSubjects = async (): Promise<Subject[]> => {
     const response = await api.get("/Subjects");

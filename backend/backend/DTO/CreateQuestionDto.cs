@@ -1,12 +1,16 @@
-﻿using backend.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using backend.Data;
 
 namespace backend.DTO;
 
 
 public sealed class CreateQuestionDto
 {
+    [MinLength(5), MaxLength(1000), Required]
     public string QuestionText { get; set; } = string.Empty;
+    [Required]
     public Guid SubjectId { get; set; }
+    [Required]
     public QuestionType QuestionType { get; set; }
 
 

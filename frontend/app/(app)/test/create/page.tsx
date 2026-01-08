@@ -21,14 +21,14 @@ import {
 import { FieldInfo } from "@/components/field-info";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
-import { getSubjects } from "@/api/getSubjects";
+import { getSubjects } from "@/api/subjects/getSubjects";
 import { useState } from "react";
 import { createTest, TestCreate } from "@/api/createTest";
 import { z } from 'zod'
 import { useRouter } from "next/navigation";
 
 
-export default function page() {
+export default function Page() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["subjects"],
