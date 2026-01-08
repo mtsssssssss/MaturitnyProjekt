@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from 'next/link'
 import { useRouter } from "next/navigation";
 
 export default function Page() {
@@ -31,6 +32,8 @@ export default function Page() {
   });
 
   return (
+    <>
+    <Link href="/subject/add">+ Pridat predmet</Link>
     <Table>
       <TableHeader>
         <TableRow>
@@ -57,5 +60,6 @@ export default function Page() {
         
       </TableBody>
     </Table>
+    </>
   );
 }
