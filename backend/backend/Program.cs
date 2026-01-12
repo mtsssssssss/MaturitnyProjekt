@@ -32,6 +32,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<QuestionsService>();
 builder.Services.AddScoped<SubjectsService>();
 builder.Services.AddScoped<TestsService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
@@ -56,8 +57,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); }
-;
+if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); };
 
 app.UseAuthorization();
 

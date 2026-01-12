@@ -2,10 +2,10 @@
 
 import axios from "axios";
 
-const backendAdress = 'https://localhost:7215/api';
+const BACKEND_ADRESS = 'https://localhost:7215/api';
 
 const api = axios.create({
-  baseURL: backendAdress,
+  baseURL: BACKEND_ADRESS,
   timeout: 3000,
   headers: {
     "Content-Type": "application/json",

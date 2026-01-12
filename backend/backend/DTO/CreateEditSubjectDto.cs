@@ -4,9 +4,10 @@ namespace backend.DTO;
 
 public class CreateEditSubjectDto
 {
+    [Required, MinLength(1)]
     public string SubjectName { get; set; } = string.Empty;
 
-    [MinLength(3), MaxLength(3)]
+    [Required, MinLength(3), MaxLength(3)]
     public string SubjectAbbrev { get; set; } = string.Empty;
 
 }
