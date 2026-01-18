@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Maturitné testy",
-  description: "Online testovací modul pre maturantov",
+  description: "Maturitné testy",
 };
 
 export default function RootLayout({

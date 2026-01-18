@@ -12,11 +12,18 @@ public class AppDbContext : DbContext
     {
     }
 
+    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+
     public DbSet<Subject> Subjects { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<AbcdQuestionAnswer> AbcdQuestionAnswers { get; set; }
+
+
     public DbSet<Test> Tests { get; set; }
     public DbSet<TestQuestion> TestQuestions { get; set; }
+    
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +32,25 @@ public class AppDbContext : DbContext
 
         // TPH
         // https://learn.microsoft.com/en-us/ef/core/modeling/inheritance#table-per-hierarchy-and-discriminator-configuration - link na dokumentaciu
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        
+        modelBuilder.Entity<User>()
+        .Property(u => u.Role)
+        .HasConversion<string>() 
+        .HasMaxLength(50);
+
+        modelBuilder.Entity<RefreshToken>()
+            .HasIndex(r => r.Token)
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasMany(x => x.RefreshTokens)
+            .WithOne(x => x.User)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
         modelBuilder.Entity<Subject>()
@@ -85,8 +111,7 @@ public abstract class Question
     public Guid Id { get; set; } 
 
     [MaxLength(1000)]
-    [Required]
-    public required string QuestionText { get; set; }
+    public string QuestionText { get; set; }
     
 
     // Subject - FK
@@ -106,7 +131,6 @@ public sealed class AbcdQuestion : Question
 
 public sealed class WritingQuestion : Question
 {
-    [Required]
     public string Answer { get; set; } = string.Empty;
 }
 

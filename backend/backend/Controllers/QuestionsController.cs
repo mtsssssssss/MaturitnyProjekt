@@ -1,9 +1,6 @@
-﻿using backend.Data;
-using backend.DTO;
+﻿using backend.DTO;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace backend.Controllers;
 
@@ -11,22 +8,73 @@ namespace backend.Controllers;
 [ApiController]
 public sealed class QuestionsController : ControllerBase
 {
-    private readonly QuestionsService questionService;
+    private readonly QuestionsService questionsService;
 
-    public QuestionsController(QuestionsService questionService)
+    public QuestionsController(QuestionsService questionsService)
     {
-        this.questionService = questionService;
+        this.questionsService = questionsService;
     }
 
-    /*
     [HttpPost]
-    public ActionResult<Question> CreateQuestion([FromBody] QuestionDto dto)
+    public async Task<ActionResult<QuestionResponseDto>> CreateQuestion([FromBody] CreateEditQuestionDto dto)
     {
-
-        var question = questionService.CreateQuestion(dto);
-
-        return Ok(question);
+        try
+        {
+            var created = await questionsService.CreateQuestionAsync(dto);
+            return CreatedAtAction(nameof(GetQuestionById), new { id = created.Id }, created);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
     }
- */
-    
+
+    [HttpGet]
+    public async Task<ActionResult<List<QuestionResponseDto>>> GetQuestionsList()
+    {
+        var questions = await questionsService.GetQuestionsListAsync();
+        return Ok(questions);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<QuestionResponseDto>> GetQuestionById(Guid id)
+    {
+        try
+        {
+            var question = await questionsService.GetQuestionByIdAsync(id);
+            return Ok(question);
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<QuestionResponseDto>> EditQuestion(Guid id, [FromBody] CreateEditQuestionDto dto)
+    {
+        try
+        {
+            var updated = await questionsService.EditQuestionAsync(id, dto);
+            return Ok(updated);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteQuestion(Guid id)
+    {
+        try
+        {
+            await questionsService.DeleteQuestionAsync(id);
+            return NoContent();
+        }
+        catch (Exception)
+        {
+            return NotFound();
+        }
+    }
 }

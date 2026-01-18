@@ -18,6 +18,7 @@ public sealed class Subject
 
     // presna dlzka tri znaky nastavena vo fluentapi
     [Required]
+    // dorobit unique
     public string SubjectAbbrev { get; set; } = string.Empty;
 
     public ICollection<Question> Questions { get; } = new List<Question>();

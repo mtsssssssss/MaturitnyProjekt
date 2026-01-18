@@ -73,6 +73,35 @@ namespace backend.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("backend.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("refresh_token", "auth");
+                });
+
             modelBuilder.Entity("backend.Entities.Subject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -102,7 +131,17 @@ namespace backend.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("SubjectId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("test", "tests");
                 });
@@ -120,6 +159,37 @@ namespace backend.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("test_question", "tests");
+                });
+
+            modelBuilder.Entity("backend.Entities.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("user", "auth");
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestion", b =>
@@ -166,6 +236,36 @@ namespace backend.Migrations
                     b.Navigation("Subject");
                 });
 
+            modelBuilder.Entity("backend.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("backend.Entities.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Entities.Test", b =>
+                {
+                    b.HasOne("backend.Entities.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Entities.User", "User")
+                        .WithMany("Tests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Entities.TestQuestion", b =>
                 {
                     b.HasOne("backend.Data.Question", "Question")
@@ -198,6 +298,13 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Entities.Test", b =>
                 {
                     b.Navigation("TestQuestions");
+                });
+
+            modelBuilder.Entity("backend.Entities.User", b =>
+                {
+                    b.Navigation("RefreshTokens");
+
+                    b.Navigation("Tests");
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestion", b =>

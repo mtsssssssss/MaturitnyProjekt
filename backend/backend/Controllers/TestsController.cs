@@ -1,6 +1,8 @@
-﻿using backend.Data;
+﻿using System.Security.Claims;
+using backend.Data;
 using backend.DTO;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers;
@@ -8,6 +10,7 @@ namespace backend.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class TestsController : ControllerBase
 {
     private readonly TestsService testsService;
@@ -16,12 +19,13 @@ public class TestsController : ControllerBase
         this.testsService = testsService; 
     }
 
-    [HttpPost]
+    [HttpPost("/create")]
+    [Authorize]
     public ActionResult CreateTest([FromBody] CreateTestDto dto)
     {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var result = testsService.CreateTest(dto);
-        // po vytvoreni testu by sme mali vratit testId
+        var result = testsService.CreateTest(Guid.Parse(userId), dto);
 
         return Ok(
             new

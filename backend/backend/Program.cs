@@ -1,13 +1,14 @@
 using backend.Data;
 using backend.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
-
-builder.Services.AddControllers();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -17,10 +18,10 @@ builder.Services.AddOpenApi();
 builder.Services.AddCors(opt =>
     opt.AddPolicy("frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .AllowCredentials(); ;
+            .AllowCredentials();
     })
 );
 
@@ -32,7 +33,40 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<QuestionsService>();
 builder.Services.AddScoped<SubjectsService>();
 builder.Services.AddScoped<TestsService>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer(options =>
+{
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = ctx =>
+        {
+            ctx.Token = ctx.Request.Cookies["access_token"];
+            return Task.CompletedTask;
+        }
+    };
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+        )
+    };
+});
+
+
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -58,6 +92,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); };
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

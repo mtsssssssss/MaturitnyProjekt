@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace backend.Entities;
 
+
 [Table("test_question", Schema = "tests")]
 public sealed class TestQuestion
 {
