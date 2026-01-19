@@ -1,6 +1,6 @@
-﻿namespace backend.DTO;
+﻿namespace backend.Dto.SubjectDto;
 
-public class SubjectDto
+public class SubjectResponseDto
 {
     public Guid Id {  get; set; }
     public string SubjectName { get; set; } = string.Empty;

@@ -20,10 +20,7 @@ public sealed class User
     [MaxLength(50)]
     public string Username { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
-
     public UserRole Role { get; set; } = UserRole.User;
-
-
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
 

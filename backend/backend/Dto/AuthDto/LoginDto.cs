@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace backend.DTO;
+namespace backend.Dto.AuthDto;
 
-public class RegisterDto
+public class LoginDto
 {
     [Required]
     [MinLength(3)]

@@ -11,8 +11,14 @@ public sealed class Test
     [Key]
     public Guid Id { get; set; }
 
-    [Required]
+    /*
+    // ----- TODO ----- //
+    public string? TestName = null;
+    public string? TestDescription = null;
+    */
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int Time { get; set; }
 
     public ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
 

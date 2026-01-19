@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace backend.DTO;
+namespace backend.Dto.TestDto;
 
-public class CreateTestDto
+public class CreateRandomTestDto
 {
     [Range(1, 60)]
     public int Time { get; set;}

@@ -9,16 +9,10 @@ namespace backend.Entities;
 [Table("subject", Schema = "subjects")]
 public sealed class Subject
 {
-    [Key]
     public Guid Id { get; set; }
 
     [MaxLength(100)]
-    [Required]
     public string SubjectName { get; set; } = string.Empty;
-
-    // presna dlzka tri znaky nastavena vo fluentapi
-    [Required]
-    // dorobit unique
     public string SubjectAbbrev { get; set; } = string.Empty;
 
     public ICollection<Question> Questions { get; } = new List<Question>();

@@ -1,4 +1,4 @@
-﻿using backend.DTO;
+﻿using backend.Dto.SubjectDto;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,67 +8,46 @@ namespace backend.Controllers;
 [ApiController]
 public sealed class SubjectsController : ControllerBase
 {
-    private readonly SubjectsService _subjectsService;
+    private readonly SubjectsService subjectsService;
 
     public SubjectsController(SubjectsService subjectsService)
     {
-        _subjectsService = subjectsService;
+        this.subjectsService = subjectsService;
     }
 
 
     [HttpPost]
-    public async Task<ActionResult<SubjectDto>> CreateSubject([FromBody] CreateEditSubjectDto dto)
+    public async Task<ActionResult<SubjectResponseDto>> CreateSubject([FromBody] CreateEditSubjectDto dto)
     {
-        var created = await _subjectsService.CreateSubjectAsync(dto);
+        var created = await subjectsService.CreateSubjectAsync(dto);
         return CreatedAtAction(nameof(GetSubjectById), new { id = created.Id }, created);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<SubjectDto>>> GetSubjectsList()
+    public async Task<ActionResult<List<SubjectResponseDto>>> GetSubjectsList()
     {
-        var subjects = await _subjectsService.GetSubjectsListAsync();
+        var subjects = await subjectsService.GetSubjectsListAsync();
         return Ok(subjects);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<SubjectDto>> GetSubjectById(Guid id)
+    public async Task<ActionResult<SubjectResponseDto>> GetSubjectById(Guid id)
     {
-        try
-        {
-            var subject = await _subjectsService.GetSubjectByIdAsync(id);
-            return Ok(subject);
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
+        var subject = await subjectsService.GetSubjectByIdAsync(id);
+        return Ok(subject);
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<SubjectDto>> EditSubject(Guid id, [FromBody] CreateEditSubjectDto dto)
+    public async Task<ActionResult<SubjectResponseDto>> UpdateSubject(Guid id, [FromBody] CreateEditSubjectDto dto)
     {
-        try
-        {
-            var updated = await _subjectsService.EditSubjectAsync(id, dto);
-            return Ok(updated);
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
+        var updated = await subjectsService.UpdateSubjectAsync(id, dto);
+        return Ok(updated);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteSubject(Guid id)
     {
-        try
-        {
-            await _subjectsService.DeleteSubjectAsync(id);
-            return NoContent();
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
+        await subjectsService.DeleteSubjectAsync(id);
+        return NoContent();
     }
 }

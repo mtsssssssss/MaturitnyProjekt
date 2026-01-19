@@ -18,7 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 export default function SidebarFooterManageUser() {
-  const { logout, user } = useAuth();
+  const { logout, user, isLoading } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -47,12 +47,12 @@ export default function SidebarFooterManageUser() {
             >
               <DropdownMenuGroup>
                 <DropdownMenuItem>
-                  <div
+                  <button
                     onClick={handleLogout}
                     className="text-red-600 cursor-pointer"
                   >
                     Odhlásiť sa
-                  </div>
+                  </button>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

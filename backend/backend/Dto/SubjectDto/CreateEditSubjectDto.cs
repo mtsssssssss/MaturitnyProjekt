@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace backend.DTO;
+namespace backend.Dto.SubjectDto;
 
 public class CreateEditSubjectDto
 {

@@ -1,11 +1,11 @@
-﻿using backend.DTO;
+﻿using backend.Dto.AuthDto;
 using backend.Entities;
 
 namespace backend.Services;
 
 public interface IAuthService
 {
-    Task<User> RegisterAsync(RegisterDto dto);
+    Task RegisterAsync(RegisterDto dto);
 
     Task<(string accessToken, RefreshToken refreshToken)> LoginAsync(LoginDto dto);
 

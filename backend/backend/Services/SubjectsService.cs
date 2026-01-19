@@ -1,97 +1,95 @@
 ﻿using backend.Data;
-using backend.DTO;
+using backend.Dto.SubjectDto;
 using backend.Entities;
+using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
 
 public class SubjectsService
 {
-    private readonly AppDbContext _dbContext;
+    private readonly AppDbContext dbContext;
 
     public SubjectsService(AppDbContext dbContext)
     {
-        _dbContext = dbContext;
+        this.dbContext = dbContext;
     }
 
-    // Vytvorenie predmetu a vrátenie DTO
-    public async Task<SubjectDto> CreateSubjectAsync(CreateEditSubjectDto dto)
+    public async Task<SubjectResponseDto> CreateSubjectAsync(CreateEditSubjectDto dto)
     {
+        var exists = await dbContext.Subjects
+        .AnyAsync(s => s.SubjectAbbrev == dto.SubjectAbbrev.ToUpper());
+
+        if (exists)
+            throw new ConflictException($"Predmet so skratkou {dto.SubjectAbbrev} uz existuje.");
+
         var subject = new Subject
         {
             SubjectName = dto.SubjectName,
             SubjectAbbrev = dto.SubjectAbbrev.ToUpper()
         };
 
-        await _dbContext.Subjects.AddAsync(subject);
-        await _dbContext.SaveChangesAsync();
+        await dbContext.Subjects.AddAsync(subject);
+        await dbContext.SaveChangesAsync();
 
-        return new SubjectDto
-        {
-            Id = subject.Id,
-            SubjectName = subject.SubjectName,
-            SubjectAbbrev = subject.SubjectAbbrev
-        };
+        return MapToResponseDto(subject);
     }
 
-    // Získanie všetkých predmetov
-    public async Task<List<SubjectDto>> GetSubjectsListAsync()
+    public async Task<List<SubjectResponseDto>> GetSubjectsListAsync()
     {
-        return await _dbContext.Subjects
-            .Select(s => new SubjectDto
-            {
-                Id = s.Id,
-                SubjectName = s.SubjectName,
-                SubjectAbbrev = s.SubjectAbbrev
-            })
-            .ToListAsync();
+        var subjects = await dbContext.Subjects.ToListAsync();
+
+        return subjects.Select(MapToResponseDto).ToList();
     }
 
-    // Získanie predmetu podľa ID
-    public async Task<SubjectDto> GetSubjectByIdAsync(Guid id)
+
+    public async Task<SubjectResponseDto> GetSubjectByIdAsync(Guid id)
     {
-        var subject = await _dbContext.Subjects.FindAsync(id);
+        var subject = await dbContext.Subjects.FindAsync(id);
         if (subject == null)
-            throw new Exception("Predmet neexistuje.");
+            throw new NotFoundException("Predmet neexistuje.");
 
-        return new SubjectDto
-        {
-            Id = subject.Id,
-            SubjectName = subject.SubjectName,
-            SubjectAbbrev = subject.SubjectAbbrev
-        };
+        return MapToResponseDto(subject);
     }
 
-    // Editácia predmetu
-    public async Task<SubjectDto> EditSubjectAsync(Guid id, CreateEditSubjectDto dto)
+    public async Task<SubjectResponseDto> UpdateSubjectAsync(Guid id, CreateEditSubjectDto dto)
     {
-        var subject = await _dbContext.Subjects.FindAsync(id);
+        var subject = await dbContext.Subjects.FindAsync(id);
         if (subject == null)
-            throw new Exception("Predmet neexistuje.");
+            throw new NotFoundException("Predmet neexistuje.");
+
+        var abbrev = dto.SubjectAbbrev.ToUpper()!;
+
+        if (await dbContext.Subjects.AnyAsync(s => s.SubjectAbbrev == abbrev && s.Id != id))
+            throw new ConflictException($"Predmet so skratkou {abbrev} už existuje.");
 
         subject.SubjectName = dto.SubjectName;
-        subject.SubjectAbbrev = dto.SubjectAbbrev.ToUpper();
+        subject.SubjectAbbrev = dto.SubjectAbbrev.ToUpper();        
 
-        await _dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync();
 
-        return new SubjectDto
+        return MapToResponseDto(subject);
+    }
+
+    public async Task DeleteSubjectAsync(Guid id)
+    {
+        var subject = await dbContext.Subjects.FindAsync(id);
+        if (subject == null)
+            throw new NotFoundException("Predmet neexistuje.");
+
+        dbContext.Subjects.Remove(subject);
+        await dbContext.SaveChangesAsync();
+    }
+
+    private SubjectResponseDto MapToResponseDto(Subject subject)
+    {
+        var dto = new SubjectResponseDto
         {
             Id = subject.Id,
             SubjectName = subject.SubjectName,
-            SubjectAbbrev = subject.SubjectAbbrev
+            SubjectAbbrev = subject.SubjectAbbrev,
         };
-    }
-
-    // Odstránenie predmetu
-    public async Task<bool> DeleteSubjectAsync(Guid id)
-    {
-        var subject = await _dbContext.Subjects.FindAsync(id);
-        if (subject == null)
-            throw new Exception("Predmet neexistuje.");
-
-        _dbContext.Subjects.Remove(subject);
-        await _dbContext.SaveChangesAsync();
-
-        return true;
+        
+        return dto;
     }
 }

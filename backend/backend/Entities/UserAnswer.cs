@@ -11,7 +11,6 @@ public class UserAnswer
     [Key]
     public Guid Id { get; set; }
 
-
     public Guid TestId { get; set; }
     public Test Test { get; set; } = null!;
 

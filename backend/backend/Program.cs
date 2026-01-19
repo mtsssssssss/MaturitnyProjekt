@@ -1,10 +1,11 @@
+using System.Text;
 using backend.Data;
+using backend.Middleware;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,6 +71,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseMiddleware<ExceptionMiddleware>();
 app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.

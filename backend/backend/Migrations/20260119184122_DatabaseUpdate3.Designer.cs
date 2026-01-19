@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using backend.Data;
@@ -11,9 +12,11 @@ using backend.Data;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119184122_DatabaseUpdate3")]
+    partial class DatabaseUpdate3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,9 +59,8 @@ namespace backend.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<string>("QuestionType")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("QuestionType")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("SubjectId")
                         .HasColumnType("uuid");
@@ -69,7 +71,7 @@ namespace backend.Migrations
 
                     b.ToTable("question", "questions");
 
-                    b.HasDiscriminator<string>("QuestionType");
+                    b.HasDiscriminator<int>("QuestionType");
 
                     b.UseTphMappingStrategy();
                 });
@@ -183,7 +185,8 @@ namespace backend.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -204,7 +207,7 @@ namespace backend.Migrations
 
                     b.ToTable("question", "questions");
 
-                    b.HasDiscriminator().HasValue("Abcd");
+                    b.HasDiscriminator().HasValue(1);
                 });
 
             modelBuilder.Entity("backend.Data.WritingQuestion", b =>
@@ -217,7 +220,7 @@ namespace backend.Migrations
 
                     b.ToTable("question", "questions");
 
-                    b.HasDiscriminator().HasValue("Writing");
+                    b.HasDiscriminator().HasValue(2);
                 });
 
             modelBuilder.Entity("backend.Data.AbcdQuestionAnswer", b =>

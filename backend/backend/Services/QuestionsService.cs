@@ -1,5 +1,7 @@
-﻿using backend.Data;
-using backend.DTO;
+﻿using System.ComponentModel.DataAnnotations;
+using backend.Data;
+using backend.Dto.QuestionDto;
+using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
@@ -13,30 +15,26 @@ public sealed class QuestionsService
         this.dbContext = dbContext;
     }
 
-    // Vytvorenie otázky a vrátenie DTO
     public async Task<QuestionResponseDto> CreateQuestionAsync(CreateEditQuestionDto dto)
     {
         if (!await dbContext.Subjects.AnyAsync(s => s.Id == dto.SubjectId))
-            throw new Exception("Predmet neexistuje.");
+            throw new NotFoundException("Predmet neexistuje.");
 
         Question question;
 
         if (dto.QuestionType == QuestionType.Abcd)
         {
             if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
-            {
-                throw new Exception("ABCD otázka musí mať minimálne 2 odpovede.");
-            }
+                throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
 
             if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
-            {
-                throw new Exception("ABCD otázka musí mať presne jednu správnu odpoveď.");
-            }
+                throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
 
             question = new AbcdQuestion
             {
                 QuestionText = dto.QuestionText,
                 SubjectId = dto.SubjectId,
+                QuestionType = dto.QuestionType,
                 AbcdQuestionAnswers = dto.AbcdAnswers
                     .Select(a => new AbcdQuestionAnswer
                     {
@@ -49,20 +47,19 @@ public sealed class QuestionsService
         else if (dto.QuestionType == QuestionType.Writing)
         {
             if (string.IsNullOrWhiteSpace(dto.Answer))
-            {
-                throw new Exception("Písomná otázka musí mať odpoveď.");
-            }
+                throw new ValidationException("Písomná otázka musí mať odpoveď.");
 
             question = new WritingQuestion
             {
                 QuestionText = dto.QuestionText,
                 SubjectId = dto.SubjectId,
+                QuestionType = dto.QuestionType,
                 Answer = dto.Answer
             };
         }
         else
         {
-            throw new Exception("Neplatný typ otázky.");
+            throw new ValidationException("Neplatný typ otázky.");
         }
 
         await dbContext.Questions.AddAsync(question);
@@ -71,30 +68,46 @@ public sealed class QuestionsService
         return MapToResponseDto(question);
     }
 
-    // Získanie všetkých otázok
+
     public async Task<List<QuestionResponseDto>> GetQuestionsListAsync()
     {
+        /*
+        var abcdQuestions = await dbContext.Questions
+            .OfType<AbcdQuestion>()
+            .Include(q => q.AbcdQuestionAnswers)
+            .Include(q => q.Subject)
+            .ToListAsync();
+
+        var writingQuestions = await dbContext.Questions
+            .OfType<WritingQuestion>()
+            .Include(q => q.Subject)
+            .ToListAsync();
+
+        var questions = abcdQuestions.Cast<Question>().Concat(writingQuestions).ToList();
+        */
+
         var questions = await dbContext.Questions
             .Include(q => q.Subject)
+            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
             .ToListAsync();
 
         return questions.Select(MapToResponseDto).ToList();
     }
 
-    // Získanie otázky podľa ID
+
     public async Task<QuestionResponseDto> GetQuestionByIdAsync(Guid id)
     {
         var question = await dbContext.Questions
             .Include(q => q.Subject)
+            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
             .FirstOrDefaultAsync(q => q.Id == id);
 
         if (question == null)
-            throw new Exception("Otázka neexistuje.");
+            throw new NotFoundException("Otázka neexistuje.");
 
         return MapToResponseDto(question);
     }
 
-    // Editácia otázky
     public async Task<QuestionResponseDto> EditQuestionAsync(Guid id, CreateEditQuestionDto dto)
     {
         var question = await dbContext.Questions
@@ -102,19 +115,16 @@ public sealed class QuestionsService
             .FirstOrDefaultAsync(q => q.Id == id);
 
         if (question == null)
-            throw new Exception("Otázka neexistuje.");
+            throw new NotFoundException("Otázka neexistuje.");
 
         if (!await dbContext.Subjects.AnyAsync(s => s.Id == dto.SubjectId))
-            throw new Exception("Predmet neexistuje.");
+            throw new NotFoundException("Predmet neexistuje.");
 
-        // Ak sa zmenil typ otázky, musíme vytvoriť novú
         if (question is AbcdQuestion && dto.QuestionType == QuestionType.Writing)
         {
-            // Odstrániť starú otázku
             dbContext.Questions.Remove(question);
             await dbContext.SaveChangesAsync();
 
-            // Vytvoriť novú písomnú otázku
             var newQuestion = new WritingQuestion
             {
                 QuestionText = dto.QuestionText,
@@ -129,20 +139,14 @@ public sealed class QuestionsService
         }
         else if (question is WritingQuestion && dto.QuestionType == QuestionType.Abcd)
         {
-            // Odstrániť starú otázku
             dbContext.Questions.Remove(question);
             await dbContext.SaveChangesAsync();
 
-            // Vytvoriť novú ABCD otázku
             if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
-            {
-                throw new Exception("ABCD otázka musí mať minimálne 2 odpovede.");
-            }
+                throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
 
             if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
-            {
-                throw new Exception("ABCD otázka musí mať presne jednu správnu odpoveď.");
-            }
+                throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
 
             var newQuestion = new AbcdQuestion
             {
@@ -164,26 +168,19 @@ public sealed class QuestionsService
         }
         else
         {
-            // Aktualizovať existujúcu otázku
             question.QuestionText = dto.QuestionText;
             question.SubjectId = dto.SubjectId;
 
             if (question is AbcdQuestion abcdQuestion)
             {
                 if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
-                {
-                    throw new Exception("ABCD otázka musí mať minimálne 2 odpovede.");
-                }
+                    throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
 
                 if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
-                {
-                    throw new Exception("ABCD otázka musí mať presne jednu správnu odpoveď.");
-                }
+                    throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
 
-                // Odstrániť staré odpovede
                 dbContext.AbcdQuestionAnswers.RemoveRange(abcdQuestion.AbcdQuestionAnswers);
 
-                // Pridať nové odpovede
                 abcdQuestion.AbcdQuestionAnswers = dto.AbcdAnswers
                     .Select(a => new AbcdQuestionAnswer
                     {
@@ -195,9 +192,7 @@ public sealed class QuestionsService
             else if (question is WritingQuestion writingQuestion)
             {
                 if (string.IsNullOrWhiteSpace(dto.Answer))
-                {
-                    throw new Exception("Písomná otázka musí mať odpoveď.");
-                }
+                    throw new ValidationException("Písomná otázka musí mať odpoveď.");
 
                 writingQuestion.Answer = dto.Answer;
             }
@@ -205,7 +200,6 @@ public sealed class QuestionsService
 
         await dbContext.SaveChangesAsync();
 
-        // Načítať aktualizovanú otázku s načítanými navigačnými vlastnosťami
         var updatedQuestion = await dbContext.Questions
             .Include(q => q.Subject)
             .FirstOrDefaultAsync(q => q.Id == id);
@@ -213,20 +207,32 @@ public sealed class QuestionsService
         return MapToResponseDto(updatedQuestion!);
     }
 
-    // Odstránenie otázky
-    public async Task<bool> DeleteQuestionAsync(Guid id)
+    public async Task DeleteQuestionAsync(Guid id)
     {
         var question = await dbContext.Questions.FindAsync(id);
         if (question == null)
-            throw new Exception("Otázka neexistuje.");
+            throw new NotFoundException("Otázka neexistuje.");
 
         dbContext.Questions.Remove(question);
         await dbContext.SaveChangesAsync();
-
-        return true;
     }
 
-    // Pomocná metóda na mapovanie Question na QuestionResponseDto
+    // ----- TODO ----- //
+    /*
+    public async Task<List<QuestionResponseDto>> GetRandomQuestions(Guid subjectId, int count = 1)
+    {
+
+        var questions = await dbContext.Questions
+            .Where(s => s.SubjectId == subjectId)
+            .Include(q => q.Subject)
+            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
+            .OrderBy(_ => Guid.NewGuid());
+            
+
+        return questions.Select(MapToResponseDto).ToList();
+
+    }*/
+
     private QuestionResponseDto MapToResponseDto(Question question)
     {
         var dto = new QuestionResponseDto
@@ -234,7 +240,8 @@ public sealed class QuestionsService
             Id = question.Id,
             QuestionText = question.QuestionText,
             SubjectId = question.SubjectId,
-            QuestionType = question is AbcdQuestion ? QuestionType.Abcd : QuestionType.Writing
+            QuestionType = question.QuestionType.ToString(),
+            
         };
 
         if (question is AbcdQuestion abcdQuestion)

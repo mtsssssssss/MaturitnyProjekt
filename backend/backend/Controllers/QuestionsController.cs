@@ -1,4 +1,4 @@
-﻿using backend.DTO;
+﻿using backend.Dto.QuestionDto;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +18,8 @@ public sealed class QuestionsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<QuestionResponseDto>> CreateQuestion([FromBody] CreateEditQuestionDto dto)
     {
-        try
-        {
-            var created = await questionsService.CreateQuestionAsync(dto);
-            return CreatedAtAction(nameof(GetQuestionById), new { id = created.Id }, created);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var created = await questionsService.CreateQuestionAsync(dto);
+        return CreatedAtAction(nameof(GetQuestionById), new { id = created.Id }, created);
     }
 
     [HttpGet]
@@ -39,42 +32,21 @@ public sealed class QuestionsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<QuestionResponseDto>> GetQuestionById(Guid id)
     {
-        try
-        {
-            var question = await questionsService.GetQuestionByIdAsync(id);
-            return Ok(question);
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
+        var question = await questionsService.GetQuestionByIdAsync(id);
+        return Ok(question);
     }
 
     [HttpPut("{id}")]
     public async Task<ActionResult<QuestionResponseDto>> EditQuestion(Guid id, [FromBody] CreateEditQuestionDto dto)
     {
-        try
-        {
-            var updated = await questionsService.EditQuestionAsync(id, dto);
-            return Ok(updated);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var updated = await questionsService.EditQuestionAsync(id, dto);
+        return Ok(updated);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteQuestion(Guid id)
     {
-        try
-        {
-            await questionsService.DeleteQuestionAsync(id);
-            return NoContent();
-        }
-        catch (Exception)
-        {
-            return NotFound();
-        }
+        await questionsService.DeleteQuestionAsync(id);
+        return NoContent();
     }
 }

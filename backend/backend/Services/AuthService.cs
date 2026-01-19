@@ -1,12 +1,14 @@
-﻿using backend.Data;
-using backend.DTO;
-using backend.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using backend.Data;
+using backend.Dto.AuthDto;
+using backend.Dto.SubjectDto;
+using backend.Entities;
+using backend.Exceptions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace backend.Services;
 
@@ -21,11 +23,11 @@ public sealed class AuthService : IAuthService
         this.configuration = configuration;
     }
 
-    public async Task<User> RegisterAsync(RegisterDto dto)
+    public async Task RegisterAsync(RegisterDto dto)
     {
         var exists = await dbContext.Users.AnyAsync(x => x.Username == dto.Username);
         if (exists)
-            throw new Exception("Používateľ už existuje");
+            throw new ConflictException("Používateľ už existuje.");
 
         var user = new User
         {
@@ -36,8 +38,6 @@ public sealed class AuthService : IAuthService
 
         dbContext.Users.Add(user);
         await dbContext.SaveChangesAsync();
-
-        return user;
     }
 
     public async Task<(string accessToken, RefreshToken refreshToken)> LoginAsync(LoginDto dto)
@@ -47,7 +47,7 @@ public sealed class AuthService : IAuthService
             .FirstOrDefaultAsync(x => x.Username == dto.Username);
 
         if (user is null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            throw new Exception("Neplatné prihlasovacie údaje");
+            throw new UnauthorizedException("Neplatné prihlasovacie údaje.");
 
         var accessToken = GenerateAccessToken(user);
 
@@ -74,7 +74,7 @@ public sealed class AuthService : IAuthService
                 x.ExpiresAt > DateTime.UtcNow);
 
         if (refreshToken is null)
-            throw new Exception("Neplatný refresh token");
+            throw new UnauthorizedException("Neplatný refresh token.");
 
         refreshToken.IsRevoked = true;
 
@@ -102,6 +102,9 @@ public sealed class AuthService : IAuthService
         {
             refreshToken.IsRevoked = true;
             await dbContext.SaveChangesAsync();
+        } else
+        {
+            throw new NotFoundException("Refresh token neexistuje.");
         }
     }
 

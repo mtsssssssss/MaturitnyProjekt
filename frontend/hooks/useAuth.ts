@@ -39,8 +39,8 @@ export function useAuth() {
   });
 
   return {
-    user: meQuery.data ?? null,
-    userRole: meQuery.data?.role ?? "",
+    user: meQuery.data,
+    userRole: meQuery.data?.role ,
     isAuthenticated: !!meQuery.data,
     isLoading: meQuery.isLoading,
 

@@ -1,9 +1,10 @@
 ﻿using System.Security.Claims;
-using backend.Data;
-using backend.DTO;
+using backend.Dto.TestDto;
+using backend.Entities;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static backend.Services.TestsService;
 
 namespace backend.Controllers;
 
@@ -19,19 +20,39 @@ public class TestsController : ControllerBase
         this.testsService = testsService; 
     }
 
-    [HttpPost("/create")]
+    [HttpPost("/create-random-test")]
     [Authorize]
-    public ActionResult CreateTest([FromBody] CreateTestDto dto)
+    public async Task<ActionResult<Test>> CreateRandomTest([FromBody] CreateRandomTestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var result = testsService.CreateTest(Guid.Parse(userId), dto);
+        var result = await testsService.CreateTest(Guid.Parse(userId), dto);
 
-        return Ok(
-            new
-            {
-                Id = "nigga123"
-            });
+        return Ok(result);           
+
+    }
+
+    /*
+    [HttpPost("/create-test")]
+    [Authorize]
+    public async Task<ActionResult<Test>> CreateTest([FromBody] CreateTestDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var result = await testsService.CreateTest(Guid.Parse(userId), dto);
+
+        return Ok(result);
+
+    }*/
+
+    [HttpPost("/start-test")]
+    public async Task<ActionResult<StartTestResponseDto>> CreateTest([FromBody] StartTestRequestDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var result = await testsService.StartTest(Guid.Parse(userId), dto.TestId);
+
+        return Ok(result);
 
     }
 

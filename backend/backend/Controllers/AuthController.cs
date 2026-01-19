@@ -1,4 +1,4 @@
-using backend.DTO;
+using backend.Dto.AuthDto;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,11 +62,11 @@ public sealed class AuthController : ControllerBase
     [HttpGet("me")]
     public IActionResult Me()
     {
-        return Ok(new
+        return Ok(new UserResponseDto
         {
-            Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
-            UserName = User.FindFirstValue(ClaimTypes.Name),
-            Role = User.FindFirstValue(ClaimTypes.Role),
+            Id = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!),
+            Username = User.FindFirstValue(ClaimTypes.Name)!,
+            Role = User.FindFirstValue(ClaimTypes.Role)!,
         });
     }
 

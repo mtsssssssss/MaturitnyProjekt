@@ -23,7 +23,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Test> Tests { get; set; }
     public DbSet<TestQuestion> TestQuestions { get; set; }
-    
+
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,11 +37,10 @@ public class AppDbContext : DbContext
             .HasIndex(u => u.Username)
             .IsUnique();
 
-        
+
         modelBuilder.Entity<User>()
         .Property(u => u.Role)
-        .HasConversion<string>() 
-        .HasMaxLength(50);
+        .HasConversion<string>();
 
         modelBuilder.Entity<RefreshToken>()
             .HasIndex(r => r.Token)
@@ -57,11 +56,19 @@ public class AppDbContext : DbContext
             .Property(x => x.SubjectAbbrev)
             .HasColumnType("char(3)");
 
+        modelBuilder.Entity<Subject>()
+            .HasIndex(i => i.SubjectAbbrev)
+            .IsUnique(true);
+
         // Question TPH konfuiguracia
         modelBuilder.Entity<Question>()
             .HasDiscriminator<QuestionType>("QuestionType")
             .HasValue<AbcdQuestion>(QuestionType.Abcd)
             .HasValue<WritingQuestion>(QuestionType.Writing);
+
+        modelBuilder.Entity<Question>()
+            .Property(u => u.QuestionType)
+            .HasConversion<string>();
 
 
         modelBuilder.Entity<Question>()
@@ -81,7 +88,7 @@ public class AppDbContext : DbContext
 
 
         modelBuilder.Entity<TestQuestion>()
-            .HasKey(tq => new { tq.TestId, tq.QuestionId }); // kompozite key 
+            .HasKey(tq => new { tq.TestId, tq.QuestionId }); 
 
 
         modelBuilder.Entity<TestQuestion>()
@@ -108,11 +115,12 @@ public enum QuestionType
 public abstract class Question
 {
     [Key]
-    public Guid Id { get; set; } 
+    public Guid Id { get; set; }
 
     [MaxLength(1000)]
-    public string QuestionText { get; set; }
-    
+    public string QuestionText { get; set; } = string.Empty;
+
+    public QuestionType QuestionType { get; set; }
 
     // Subject - FK
     public Guid SubjectId { get; set; }
@@ -124,7 +132,7 @@ public abstract class Question
 
 
 public sealed class AbcdQuestion : Question
-{       
+{
     public ICollection<AbcdQuestionAnswer> AbcdQuestionAnswers { get; set; } = new List<AbcdQuestionAnswer>();
 }
 
@@ -142,7 +150,7 @@ public sealed class AbcdQuestionAnswer
     public Guid Id { get; set; }
 
     [Required]
-    public  string Answer { get; set; } = string.Empty;
+    public string Answer { get; set; } = string.Empty;
 
     [Required]
     public bool IsRight { get; set; }
