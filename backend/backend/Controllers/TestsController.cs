@@ -20,13 +20,13 @@ public class TestsController : ControllerBase
         this.testsService = testsService; 
     }
 
-    [HttpPost("/create-random-test")]
-    [Authorize]
-    public async Task<ActionResult<Test>> CreateRandomTest([FromBody] CreateRandomTestDto dto)
+    [HttpPost("create-random-test")]
+    [Authorize()]
+    public async Task<ActionResult<CreateRandomTestResponseDto>> CreateRandomTest([FromBody] CreateRandomTestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var result = await testsService.CreateTest(Guid.Parse(userId), dto);
+        var result = await testsService.CreateRandomTest(Guid.Parse(userId), dto);
 
         return Ok(result);           
 
@@ -45,7 +45,7 @@ public class TestsController : ControllerBase
 
     }*/
 
-    [HttpPost("/start-test")]
+    [HttpPost("start-test")]
     public async Task<ActionResult<StartTestResponseDto>> CreateTest([FromBody] StartTestRequestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;

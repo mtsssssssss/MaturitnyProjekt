@@ -85,7 +85,9 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
 
-
+        modelBuilder.Entity<Test>()
+        .Property(t => t.TestStatus)
+        .HasConversion<string>();
 
         modelBuilder.Entity<TestQuestion>()
             .HasKey(tq => new { tq.TestId, tq.QuestionId }); 

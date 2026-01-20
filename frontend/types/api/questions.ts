@@ -1,27 +1,27 @@
-export interface AbcdAnswerResponseDto {
+export interface AbcdAnswerResponse {
   id: string;
   answer: string;
   isRight: boolean;
 }
 
-export interface CreateEditAbcdAnswerDto {
+export interface CreateEditAbcdAnswer {
   answer: string;
   isRight: boolean;
 }
 
-export interface CreateEditQuestionDto {
+export interface CreateEditQuestion {
   questionText: string;
   subjectId: string;
   questionType: number;
-  abcdAnswers?: CreateEditAbcdAnswerDto[];
+  abcdAnswers?: CreateEditAbcdAnswer[];
   answer?: string;
 }
 
-export interface QuestionResponseDto {
+export interface QuestionResponse{
   id: string;
   questionText: string;
   subjectId: string;
   questionType: number;
-  abcdAnswers?: AbcdAnswerResponseDto[];
+  abcdAnswers?: AbcdAnswerResponse[];
   answer?: string;
 }

@@ -33,7 +33,7 @@ export default function Page() {
 
   return (
     <>
-    <Link href="/question/add">+ Pridať otázku</Link>
+    <Link href="/questions/add">+ Pridať otázku</Link>
     <Table>
       <TableHeader>
         <TableRow>

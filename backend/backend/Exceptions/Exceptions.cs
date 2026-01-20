@@ -17,3 +17,10 @@ public sealed class UnauthorizedException : BaseException
     public UnauthorizedException(string message)
         : base(message, StatusCodes.Status401Unauthorized) { }
 }
+
+public sealed class ForbiddenException : BaseException
+{
+    public ForbiddenException(string message)
+        : base(message, StatusCodes.Status403Forbidden) { }
+}
+

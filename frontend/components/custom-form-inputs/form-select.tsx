@@ -10,8 +10,9 @@ import {
 } from "../ui/select";
 
 interface Option {
+  key: string,
   value: string | number;
-  label: string;
+  text: string;
 }
 
 interface FormSelectProps {
@@ -45,7 +46,7 @@ export const TanStackFormSelect = ({
           <SelectGroup>
             {options?.map((option) => (
               <SelectItem key={option.value} value={option.value.toString()}>
-                {option.label}
+                {option.text}
               </SelectItem>
             ))}
           </SelectGroup>

@@ -1,8 +1,7 @@
-﻿using System.Security.Claims;
-using backend.Data;
+﻿using backend.Data;
 using backend.Dto.TestDto;
 using backend.Entities;
-using Microsoft.AspNetCore.Authorization;
+using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
@@ -16,10 +15,14 @@ public class TestsService
     }
 
 
-    public async Task<Guid> CreateTest(Guid userId, CreateRandomTestDto dto)
+    public async Task<CreateRandomTestResponseDto> CreateRandomTest(Guid userId, CreateRandomTestDto dto)
     {
 
         // https://stackoverflow.com/questions/7781893/ef-code-first-how-to-get-random-rows
+        var subject = await dbContext.Subjects.FirstOrDefaultAsync(s => s.Id == dto.SubjectId);
+
+        if (subject == null)
+            throw new NotFoundException("Predmet neexistuje.");
 
         var randomQuestions = await dbContext.Questions
             .Where(q => q.SubjectId == dto.SubjectId)
@@ -32,6 +35,9 @@ public class TestsService
         {
             UserId = userId,
             SubjectId = dto.SubjectId,
+            TestName = subject.SubjectAbbrev + " Test",
+            TestDescription = "Prípravný test z predmetu " + subject.SubjectName,
+            TestStatus = TestStatus.Created,
             Time = dto.Time,
             TestQuestions = randomQuestions.Select(q => new TestQuestion
             {
@@ -42,36 +48,33 @@ public class TestsService
         dbContext.Tests.Add(generatedTest);
         await dbContext.SaveChangesAsync();
 
-        return generatedTest.Id;
+        return new CreateRandomTestResponseDto
+        {
+            Id = generatedTest.Id,
+        };
     }
-
-    public sealed class StartTestResponseDto
-    {
-        public Guid Id { get; set; }
-        public Guid SubjectId { get; set; }
-        public int Time { get; set; }
-
-        public List<QuestionResponseDto> Questions { get; set; } = [];
-    }
-    public sealed class QuestionResponseDto
-    {
-        public Guid Id { get; set; }
-        public string QuestionText { get; set; } = string.Empty;
-        public QuestionType Type { get; set; }
-
-        public List<AbcdAnswerResponseDto>? Answers { get; set; }
-    }
-    public sealed class AbcdAnswerResponseDto
-    {
-        public Guid Id { get; set; }
-        public string Answer { get; set; } = string.Empty;
-    }
-
+     
 
 
     public async Task<StartTestResponseDto> StartTest(Guid userId, Guid testId)
     {
         var test = await dbContext.Tests
+            .FirstOrDefaultAsync(t => t.Id == testId && t.UserId == userId);
+
+        if (test == null)
+            throw new NotFoundException("Test neexistuje alebo nepatrí používateľovi");
+
+        if (test.TestStatus != TestStatus.Created)
+            throw new ForbiddenException("Test už bol spustený");
+
+        test.TestStarted = DateTime.UtcNow;
+        test.TestStatus = TestStatus.InProgress;
+
+        await dbContext.SaveChangesAsync();
+
+
+
+        var testResponse = await dbContext.Tests
             .Where(t => t.Id == testId && t.UserId == userId)
             .Select(t => new StartTestResponseDto
             {
@@ -101,10 +104,10 @@ public class TestsService
             })
             .FirstOrDefaultAsync();
 
-        if (test is null)
+        if (testResponse is null)
             throw new Exception("Test neexistuje alebo nepatrí používateľovi");
 
-        return test;
+        return testResponse;
     }
 
 

@@ -21,10 +21,11 @@ import { FieldInfo } from "@/components/custom-form-inputs/field-info";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "@tanstack/react-form";
 import { getSubjects } from "@/api/subjects";
-import { createTest, TestCreate } from "@/api/tests/createTest";
+import { createRandomTest } from "@/api/tests";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { TanStackFormInput } from "@/components/custom-form-inputs/form-input";
+import { TestCreate } from "@/types/api/tests";
 
 export default function Page() {
   const { data, isLoading, error } = useQuery({
@@ -35,9 +36,9 @@ export default function Page() {
   const router = useRouter();
 
   const mutation = useMutation({
-    mutationFn: (data: TestCreate) => createTest(data),
+    mutationFn: (data: TestCreate) => createRandomTest(data),
     onSuccess: (response: { id: string }) => {
-      router.push(`/test/${response.id}`);
+      router.push(`/tests/${response.id}`);
     },
   });
 
