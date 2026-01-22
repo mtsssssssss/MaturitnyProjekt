@@ -3,6 +3,7 @@ using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace backend.Controllers;
 
@@ -68,6 +69,16 @@ public sealed class AuthController : ControllerBase
             Username = User.FindFirstValue(ClaimTypes.Name)!,
             Role = User.FindFirstValue(ClaimTypes.Role)!,
         });
+    }
+
+    [Authorize]
+    [HttpGet("full-user-info")]
+    public async Task<IActionResult> GetFullUserInfo()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var userInfo = await authService.GetFullUserInfo(userId);
+        return Ok(userInfo);
     }
 
     private void SetCookies(string access, string refresh, DateTime refreshExpiry)

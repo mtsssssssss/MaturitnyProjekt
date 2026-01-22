@@ -17,6 +17,10 @@ export default async function Layout({
 
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
+      <header>
+        
+      </header>
+
       <AppSidebar />
       <SidebarInset>
         <SidebarTrigger />

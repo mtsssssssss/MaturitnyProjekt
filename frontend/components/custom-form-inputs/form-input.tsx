@@ -8,6 +8,7 @@ interface FormInputProps {
   type?: "text" | "password" | "email" | "number";
   placeholder?: string;
   description?: string;
+  className? :string | undefined
 }
 
 export const TanStackFormInput = ({

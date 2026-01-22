@@ -5,6 +5,6 @@ export const metadata: Metadata = {
   title: "Registrovať sa",
 };
 
-export default function page() {
+export default function RegisterPage() {
   return <SignupForm />;
 }

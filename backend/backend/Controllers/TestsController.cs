@@ -4,7 +4,6 @@ using backend.Entities;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static backend.Services.TestsService;
 
 namespace backend.Controllers;
 
@@ -45,6 +44,7 @@ public class TestsController : ControllerBase
 
     }*/
 
+    /*
     [HttpPost("start-test")]
     public async Task<ActionResult<StartTestResponseDto>> CreateTest([FromBody] StartTestRequestDto dto)
     {
@@ -55,5 +55,6 @@ public class TestsController : ControllerBase
         return Ok(result);
 
     }
+    */
 
 }

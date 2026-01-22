@@ -25,6 +25,10 @@ public class AppDbContext : DbContext
     public DbSet<TestQuestion> TestQuestions { get; set; }
 
 
+    public DbSet<Test> TestAttempts { get; set; }
+    public DbSet<TestAttemptUserAnswer> TestAttemptUserAnswers { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -85,10 +89,6 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Cascade);
 
 
-        modelBuilder.Entity<Test>()
-        .Property(t => t.TestStatus)
-        .HasConversion<string>();
-
         modelBuilder.Entity<TestQuestion>()
             .HasKey(tq => new { tq.TestId, tq.QuestionId }); 
 
@@ -103,6 +103,14 @@ public class AppDbContext : DbContext
             .HasOne(tq => tq.Question)
             .WithMany(q => q.TestQuestions)
             .HasForeignKey(tq => tq.QuestionId);
+
+        modelBuilder.Entity<TestAttempt>()
+        .Property(t => t.TestStatus)
+        .HasConversion<string>();
+
+        modelBuilder.Entity<TestAttemptUserAnswer>()
+            .HasIndex(t =>  new { t.TestAttemptId, t.QuestionId})
+            .IsUnique();
     }
 
 }
@@ -116,7 +124,6 @@ public enum QuestionType
 [Table("question", Schema = "questions")]
 public abstract class Question
 {
-    [Key]
     public Guid Id { get; set; }
 
     [MaxLength(1000)]
@@ -148,13 +155,8 @@ public sealed class WritingQuestion : Question
 [Table("abcd_question_answer", Schema = "questions")]
 public sealed class AbcdQuestionAnswer
 {
-    [Key]
     public Guid Id { get; set; }
-
-    [Required]
     public string Answer { get; set; } = string.Empty;
-
-    [Required]
     public bool IsRight { get; set; }
 
     // AbcdQuestion - FK

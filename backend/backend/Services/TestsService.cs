@@ -33,12 +33,10 @@ public class TestsService
 
         var generatedTest = new Test
         {
-            UserId = userId,
             SubjectId = dto.SubjectId,
             TestName = subject.SubjectAbbrev + " Test",
             TestDescription = "Prípravný test z predmetu " + subject.SubjectName,
-            TestStatus = TestStatus.Created,
-            Time = dto.Time,
+            TimeLimitMinutes = dto.Time,
             TestQuestions = randomQuestions.Select(q => new TestQuestion
             {
                 QuestionId = q.Id
@@ -55,7 +53,7 @@ public class TestsService
     }
      
 
-
+    /*
     public async Task<StartTestResponseDto> StartTest(Guid userId, Guid testId)
     {
         var test = await dbContext.Tests
@@ -109,6 +107,7 @@ public class TestsService
 
         return testResponse;
     }
+    */
 
 
 }

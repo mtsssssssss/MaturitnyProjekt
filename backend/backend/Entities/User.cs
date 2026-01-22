@@ -16,6 +16,8 @@ public sealed class User
 {
     public Guid Id { get; set; }
 
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
 
     [MaxLength(50)]
     public string Username { get; set; } = string.Empty;

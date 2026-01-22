@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace backend.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseUpdate : Migration
+    public partial class DatabaseUpdate1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,7 +45,7 @@ namespace backend.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Role = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -60,8 +60,8 @@ namespace backend.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     QuestionText = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    QuestionType = table.Column<string>(type: "text", nullable: false),
                     SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
-                    QuestionType = table.Column<int>(type: "integer", nullable: false),
                     Answer = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
@@ -105,9 +105,12 @@ namespace backend.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestName = table.Column<string>(type: "text", nullable: false),
+                    TestDescription = table.Column<string>(type: "text", nullable: false),
+                    TimeLimitMinutes = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false)
+                    SubjectId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -124,8 +127,7 @@ namespace backend.Migrations
                         column: x => x.UserId,
                         principalSchema: "auth",
                         principalTable: "user",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -146,6 +148,41 @@ namespace backend.Migrations
                         column: x => x.AbcdQuestionId,
                         principalSchema: "questions",
                         principalTable: "question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "test_attempt",
+                schema: "tests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    AttemptName = table.Column<string>(type: "text", nullable: false),
+                    TestStarted = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    TestFinished = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    TestStatus = table.Column<string>(type: "text", nullable: false),
+                    TotalQuestions = table.Column<int>(type: "integer", nullable: false),
+                    CorrectAnswers = table.Column<int>(type: "integer", nullable: false),
+                    TotalScorePercentage = table.Column<decimal>(type: "numeric", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TestId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_test_attempt", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_test_attempt_test_TestId",
+                        column: x => x.TestId,
+                        principalSchema: "tests",
+                        principalTable: "test",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_test_attempt_user_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "auth",
+                        principalTable: "user",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -177,6 +214,35 @@ namespace backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TestAttemptUserAnswers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    QuestionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserAnswer = table.Column<string>(type: "text", nullable: false),
+                    IsCorrect = table.Column<bool>(type: "boolean", nullable: false),
+                    TestAttemptId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestAttemptUserAnswers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TestAttemptUserAnswers_question_QuestionId",
+                        column: x => x.QuestionId,
+                        principalSchema: "questions",
+                        principalTable: "question",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TestAttemptUserAnswers_test_attempt_TestAttemptId",
+                        column: x => x.TestAttemptId,
+                        principalSchema: "tests",
+                        principalTable: "test_attempt",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_abcd_question_answer_AbcdQuestionId",
                 schema: "questions",
@@ -203,6 +269,13 @@ namespace backend.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_subject_SubjectAbbrev",
+                schema: "subjects",
+                table: "subject",
+                column: "SubjectAbbrev",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_test_SubjectId",
                 schema: "tests",
                 table: "test",
@@ -215,10 +288,33 @@ namespace backend.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_test_attempt_TestId",
+                schema: "tests",
+                table: "test_attempt",
+                column: "TestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_test_attempt_UserId",
+                schema: "tests",
+                table: "test_attempt",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_test_question_QuestionId",
                 schema: "tests",
                 table: "test_question",
                 column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestAttemptUserAnswers_QuestionId",
+                table: "TestAttemptUserAnswers",
+                column: "QuestionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TestAttemptUserAnswers_TestAttemptId_QuestionId",
+                table: "TestAttemptUserAnswers",
+                columns: new[] { "TestAttemptId", "QuestionId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_user_Username",
@@ -244,8 +340,15 @@ namespace backend.Migrations
                 schema: "tests");
 
             migrationBuilder.DropTable(
+                name: "TestAttemptUserAnswers");
+
+            migrationBuilder.DropTable(
                 name: "question",
                 schema: "questions");
+
+            migrationBuilder.DropTable(
+                name: "test_attempt",
+                schema: "tests");
 
             migrationBuilder.DropTable(
                 name: "test",

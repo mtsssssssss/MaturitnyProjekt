@@ -142,24 +142,14 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("TestFinished")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("TestName")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("TestStarted")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TestStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Time")
+                    b.Property<int>("TimeLimitMinutes")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -169,6 +159,79 @@ namespace backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("test", "tests");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestAttempt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AttemptName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CorrectAnswers")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("TestFinished")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("TestId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("TestStarted")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TestStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalScorePercentage")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("test_attempt", "tests");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestAttemptUserAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("QuestionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TestAttemptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserAnswer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("TestAttemptId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("TestAttemptUserAnswers");
                 });
 
             modelBuilder.Entity("backend.Entities.TestQuestion", b =>
@@ -194,6 +257,14 @@ namespace backend.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -279,15 +350,49 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("backend.Entities.User", "User")
+                    b.HasOne("backend.Entities.User", null)
                         .WithMany("Tests")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestAttempt", b =>
+                {
+                    b.HasOne("backend.Entities.Test", "Test")
+                        .WithMany("TestAttempts")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Subject");
+                    b.Navigation("Test");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestAttemptUserAnswer", b =>
+                {
+                    b.HasOne("backend.Data.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Entities.TestAttempt", "TestAttempt")
+                        .WithMany("UserAnswers")
+                        .HasForeignKey("TestAttemptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("TestAttempt");
                 });
 
             modelBuilder.Entity("backend.Entities.TestQuestion", b =>
@@ -321,7 +426,14 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Entities.Test", b =>
                 {
+                    b.Navigation("TestAttempts");
+
                     b.Navigation("TestQuestions");
+                });
+
+            modelBuilder.Entity("backend.Entities.TestAttempt", b =>
+                {
+                    b.Navigation("UserAnswers");
                 });
 
             modelBuilder.Entity("backend.Entities.User", b =>

@@ -33,6 +33,8 @@ public sealed class AuthService : IAuthService
         {
             Username = dto.Username,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
             Role = UserRole.User,
         };
 
@@ -102,10 +104,37 @@ public sealed class AuthService : IAuthService
         {
             refreshToken.IsRevoked = true;
             await dbContext.SaveChangesAsync();
-        } else
+        }
+        else
         {
             throw new NotFoundException("Refresh token neexistuje.");
         }
+    }
+
+    public async Task<UserFullInfoResponseDto> GetFullUserInfo(Guid userId)
+    {
+        var user = await dbContext.Users
+            .Where(x => x.Id == userId)
+            .FirstOrDefaultAsync();
+
+        return MapToResponseDto(user!);
+
+
+    }
+
+    private UserFullInfoResponseDto MapToResponseDto(User user)
+    {
+        var dto = new UserFullInfoResponseDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Fullname = user.FirstName + " " + user.LastName,
+            Role = user.Role.ToString(),
+        };
+
+        return dto;
     }
 
     private string GenerateAccessToken(User user)

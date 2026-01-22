@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,10 +16,14 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { TanStackFormInput } from "../custom-form-inputs/form-input";
 import { RegisterDto } from "@/types/api/auth";
+import { Loader2, UserPlus } from "lucide-react";
+import { useState } from "react";
+import Link from "next/link";
 
-export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
+export function SignupForm({ className, ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
   const { register } = useAuth();
+  const [isPending, setIsPending] = useState(false);
 
   const form = useForm({
     defaultValues: {
@@ -41,38 +46,48 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         }),
     },
     onSubmit: async ({ value }: { value: RegisterDto }) => {
+      setIsPending(true);
       try {
         await register(value);
         router.push("/dashboard");
       } catch (e) {
-        console.log("Error");
+        console.error("Registration failed", e);
+      } finally {
+        setIsPending(false);
       }
     },
   });
 
   return (
-    <Card {...props}>
-      <CardHeader>
-        <CardTitle>Vytvoriť si svoj účet</CardTitle>
+    <Card className={cn("shadow-xl border-t-4 border-t-primary", className)} {...props}>
+      <CardHeader className="space-y-1 text-center">
+        <div className="flex justify-center mb-2">
+          <div className="p-3 bg-primary/10 rounded-full">
+            <UserPlus className="w-6 h-6 text-primary" />
+          </div>
+        </div>
+        <CardTitle className="text-2xl font-bold tracking-tight">Vytvoriť účet</CardTitle>
         <CardDescription>
-          Vyplňte údaje pre vytvorenie nového účtu
+          Zaregistrujte sa a získajte prístup k testom
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
           onSubmit={(event) => {
             event.preventDefault();
+            event.stopPropagation();
             form.handleSubmit();
           }}
         >
-          <FieldGroup>
+          <FieldGroup className="space-y-4">
             <form.Field
               name="username"
               children={(field) => (
                 <TanStackFormInput
                   field={field}
                   label="Prihlasovacie meno"
-                  placeholder="Prihlasovacie meno"
+                  placeholder="napr. matus "
+                  className="h-11"
                 />
               )}
             />
@@ -83,7 +98,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   field={field}
                   type="password"
                   label="Heslo"
-                  placeholder="Heslo"
+                  placeholder="••••••••"
+                  className="h-11"
                 />
               )}
             />
@@ -93,18 +109,42 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 <TanStackFormInput
                   field={field}
                   type="password"
-                  label="Potvrď heslo"
-                  placeholder="Heslo"
+                  label="Potvrdiť heslo"
+                  placeholder="••••••••"
+                  className="h-11"
                 />
               )}
             />
-            <Field>
-              <Button type="submit">Vytvoriť si účet</Button>
-            </Field>
+            
+            <div className="pt-2 space-y-4">
+              <Button 
+                type="submit" 
+                className="w-full h-11 text-base font-semibold" 
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Vytváram účet...
+                  </>
+                ) : (
+                  "Zaregistrovať sa"
+                )}
+              </Button>
+
+              <div className="text-center text-sm">
+                <span className="text-muted-foreground">Už máte účet? </span>
+                <Link 
+                  href="/login" 
+                  className="text-primary font-semibold hover:underline underline-offset-4"
+                >
+                  Prihláste sa
+                </Link>
+              </div>
+            </div>
           </FieldGroup>
         </form>
       </CardContent>
     </Card>
   );
 }
-

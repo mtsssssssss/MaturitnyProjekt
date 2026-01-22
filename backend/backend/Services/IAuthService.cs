@@ -12,4 +12,6 @@ public interface IAuthService
     Task<(string accessToken, RefreshToken refreshToken)> RefreshAsync(string token);
 
     Task RevokeRefreshTokenAsync(string token);
+
+    Task<UserFullInfoResponseDto> GetFullUserInfo(Guid userId);
 }
