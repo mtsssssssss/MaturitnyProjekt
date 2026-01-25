@@ -1,3 +1,4 @@
+import { FieldApi } from "@tanstack/react-form";
 import { FieldInfo } from "./field-info";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import {
@@ -10,7 +11,7 @@ import {
 } from "../ui/select";
 
 interface Option {
-  key: string,
+  key: string;
   value: string | number;
   text: string;
 }
@@ -32,31 +33,48 @@ export const TanStackFormSelect = ({
 }: FormSelectProps) => {
   return (
     <Field>
-      <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+      <FieldLabel htmlFor={field.name} className="font-semibold text-slate-700">
+        {label}
+      </FieldLabel>
 
       <Select
-        value={field.state.value}
+        value={field.state.value?.toString() || ""}
         onValueChange={(value) => field.handleChange(value)}
       >
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={placeholder || "Vyber položku"} />
+        <SelectTrigger 
+          id={field.name}
+          className="w-full bg-white border-slate-200 focus:ring-orange-500 transition-all"
+        >
+          <SelectValue placeholder={placeholder || "Vyberte možnosť"} />
         </SelectTrigger>
 
         <SelectContent>
           <SelectGroup>
-            {options?.map((option) => (
-              <SelectItem key={option.value} value={option.value.toString()}>
-                {option.text}
-              </SelectItem>
-            ))}
+            {options && options.length > 0 ? (
+              options.map((option) => (
+                <SelectItem 
+                  key={option.key} 
+                  value={option.value.toString()}
+                  className="cursor-pointer"
+                >
+                  {option.text}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="p-2 text-sm text-muted-foreground text-center">
+                Žiadne možnosti k dispozícii
+              </div>
+            )}
           </SelectGroup>
         </SelectContent>
       </Select>
 
-      <FieldDescription>
-        {description}
-        <FieldInfo field={field} />
-      </FieldDescription>
+      {(description || field.state.meta.errors.length > 0) && (
+        <FieldDescription className="mt-1">
+          {description}
+          <FieldInfo field={field} />
+        </FieldDescription>
+      )}
     </Field>
   );
 };

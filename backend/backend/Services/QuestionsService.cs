@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using backend.Data;
 using backend.Dto.QuestionDto;
+using backend.Dto.SubjectDto;
+using backend.Entities;
 using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +19,9 @@ public sealed class QuestionsService
 
     public async Task<QuestionResponseDto> CreateQuestionAsync(CreateEditQuestionDto dto)
     {
-        if (!await dbContext.Subjects.AnyAsync(s => s.Id == dto.SubjectId))
+
+        var subject = await dbContext.Subjects.FindAsync(dto.SubjectId);
+        if (subject == null)
             throw new NotFoundException("Predmet neexistuje.");
 
         Question question;
@@ -33,7 +37,7 @@ public sealed class QuestionsService
             question = new AbcdQuestion
             {
                 QuestionText = dto.QuestionText,
-                SubjectId = dto.SubjectId,
+                Subject = subject,
                 QuestionType = dto.QuestionType,
                 AbcdQuestionAnswers = dto.AbcdAnswers
                     .Select(a => new AbcdQuestionAnswer
@@ -52,7 +56,7 @@ public sealed class QuestionsService
             question = new WritingQuestion
             {
                 QuestionText = dto.QuestionText,
-                SubjectId = dto.SubjectId,
+                Subject = subject,
                 QuestionType = dto.QuestionType,
                 Answer = dto.Answer
             };
@@ -86,10 +90,11 @@ public sealed class QuestionsService
         var questions = abcdQuestions.Cast<Question>().Concat(writingQuestions).ToList();
         */
 
+
         var questions = await dbContext.Questions
-            .Include(q => q.Subject)
-            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
-            .ToListAsync();
+        .Include(q => q.Subject) // Toto je na Question, pôjde to pre všetko
+        .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers) // Podmienený include
+        .ToListAsync();
 
         return questions.Select(MapToResponseDto).ToList();
     }
@@ -111,100 +116,53 @@ public sealed class QuestionsService
     public async Task<QuestionResponseDto> EditQuestionAsync(Guid id, CreateEditQuestionDto dto)
     {
         var question = await dbContext.Questions
-            .Include(q => q is AbcdQuestion ? ((AbcdQuestion)q).AbcdQuestionAnswers : null)
+            .Include(q => q.Subject)
+            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
             .FirstOrDefaultAsync(q => q.Id == id);
 
         if (question == null)
             throw new NotFoundException("Otázka neexistuje.");
 
-        if (!await dbContext.Subjects.AnyAsync(s => s.Id == dto.SubjectId))
+        var subject = await dbContext.Subjects.FindAsync(dto.SubjectId);
+        if (subject == null)
             throw new NotFoundException("Predmet neexistuje.");
 
-        if (question is AbcdQuestion && dto.QuestionType == QuestionType.Writing)
+        question.QuestionText = dto.QuestionText;
+        question.SubjectId = Guid.Parse(dto.SubjectId);
+        question.Subject = subject; 
+
+        if (question is AbcdQuestion abcdQuestion)
         {
-            dbContext.Questions.Remove(question);
-            await dbContext.SaveChangesAsync();
+            ValidateAbcdAnswers(dto.AbcdAnswers);
 
-            var newQuestion = new WritingQuestion
-            {
-                QuestionText = dto.QuestionText,
-                SubjectId = dto.SubjectId,
-                Answer = dto.Answer ?? string.Empty
-            };
-
-            await dbContext.Questions.AddAsync(newQuestion);
-            await dbContext.SaveChangesAsync();
-
-            return MapToResponseDto(newQuestion);
+            dbContext.AbcdQuestionAnswers.RemoveRange(abcdQuestion.AbcdQuestionAnswers);
+            abcdQuestion.AbcdQuestionAnswers = dto.AbcdAnswers
+                .Select(a => new AbcdQuestionAnswer
+                {
+                    Answer = a.Answer,
+                    IsRight = a.IsRight
+                }).ToList();
         }
-        else if (question is WritingQuestion && dto.QuestionType == QuestionType.Abcd)
+        else if (question is WritingQuestion writingQuestion)
         {
-            dbContext.Questions.Remove(question);
-            await dbContext.SaveChangesAsync();
+            if (string.IsNullOrWhiteSpace(dto.Answer))
+                throw new ValidationException("Písomná otázka musí mať odpoveď.");
 
-            if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
-                throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
-
-            if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
-                throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
-
-            var newQuestion = new AbcdQuestion
-            {
-                QuestionText = dto.QuestionText,
-                SubjectId = dto.SubjectId,
-                AbcdQuestionAnswers = dto.AbcdAnswers
-                    .Select(a => new AbcdQuestionAnswer
-                    {
-                        Answer = a.Answer,
-                        IsRight = a.IsRight
-                    })
-                    .ToList()
-            };
-
-            await dbContext.Questions.AddAsync(newQuestion);
-            await dbContext.SaveChangesAsync();
-
-            return MapToResponseDto(newQuestion);
-        }
-        else
-        {
-            question.QuestionText = dto.QuestionText;
-            question.SubjectId = dto.SubjectId;
-
-            if (question is AbcdQuestion abcdQuestion)
-            {
-                if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
-                    throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
-
-                if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
-                    throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
-
-                dbContext.AbcdQuestionAnswers.RemoveRange(abcdQuestion.AbcdQuestionAnswers);
-
-                abcdQuestion.AbcdQuestionAnswers = dto.AbcdAnswers
-                    .Select(a => new AbcdQuestionAnswer
-                    {
-                        Answer = a.Answer,
-                        IsRight = a.IsRight
-                    })
-                    .ToList();
-            }
-            else if (question is WritingQuestion writingQuestion)
-            {
-                if (string.IsNullOrWhiteSpace(dto.Answer))
-                    throw new ValidationException("Písomná otázka musí mať odpoveď.");
-
-                writingQuestion.Answer = dto.Answer;
-            }
+            writingQuestion.Answer = dto.Answer;
         }
 
         await dbContext.SaveChangesAsync();
 
-        var updatedQuestion = await dbContext.Questions
-            .Include(q => q.Subject)
-            .FirstOrDefaultAsync(q => q.Id == id);
+        return MapToResponseDto(question);
+    }
 
-        return MapToResponseDto(updatedQuestion!);
+    private void ValidateAbcdAnswers(List<CreateEditAbcdAnswerDto>? answers)
+    {
+        if (answers == null || answers.Count < 2)
+            throw new ValidationException("ABCD otázka musí mať minimálne 2 odpovede.");
+
+        if (answers.Count(a => a.IsRight) != 1)
+            throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
     }
 
     public async Task DeleteQuestionAsync(Guid id)
@@ -239,7 +197,12 @@ public sealed class QuestionsService
         {
             Id = question.Id,
             QuestionText = question.QuestionText,
-            SubjectId = question.SubjectId,
+            Subject = new SubjectResponseDto
+            {
+                Id = question.Subject.Id,
+                SubjectAbbrev = question.Subject.SubjectAbbrev,
+                SubjectName = question.Subject.SubjectName,
+            },
             QuestionType = question.QuestionType.ToString(),
             
         };

@@ -1,4 +1,5 @@
 using backend.Data;
+using backend.Dto.SubjectDto;
 
 namespace backend.Dto.QuestionDto;
 
@@ -6,7 +7,7 @@ public sealed class QuestionResponseDto
 {
     public Guid Id { get; set; }
     public string QuestionText { get; set; } = string.Empty;
-    public Guid SubjectId { get; set; }
+    public SubjectResponseDto Subject { get; set; } = new SubjectResponseDto();
     public string QuestionType { get; set; } = string.Empty;
     
     public List<AbcdAnswerResponseDto>? AbcdAnswers { get; set; }

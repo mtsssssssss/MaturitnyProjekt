@@ -42,14 +42,11 @@ export default function LoginForm({
       }),
     },
     onSubmit: async ({ value }: { value: LoginDto }) => {
-      setIsPending(true);
       try {
         await login(value);
         router.push("/dashboard");
       } catch (e) {
         console.error("Login failed", e);
-      } finally {
-        setIsPending(false);
       }
     },
   });
@@ -84,7 +81,7 @@ export default function LoginForm({
                     field={field}
                     label="Prihlasovacie meno"
                     type="text"
-                    placeholder="napr. jan_mrkvicka"
+                    placeholder="napr. matus"
                     className="h-11"
                   />
                 )}
@@ -107,19 +104,10 @@ export default function LoginForm({
                 <Button
                   type="submit"
                   className="w-full h-11 text-base font-semibold transition-all hover:opacity-90"
-                  disabled={isPending}
                 >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Prihlasujem...
-                    </>
-                  ) : (
-                    "Prihlásiť sa"
-                  )}
+                  Prihlásiť sa
                 </Button>
 
-                {/* Štýlovaný odkaz na registráciu */}
                 <div className="text-center text-sm">
                   <span className="text-muted-foreground">Nemáte účet? </span>
                   <Link
@@ -130,7 +118,7 @@ export default function LoginForm({
                   </Link>
                 </div>
               </div>
-            </FieldGroup>
+            </FieldGroup> 
           </form>
         </CardContent>
       </Card>

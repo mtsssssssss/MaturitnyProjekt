@@ -1,5 +1,5 @@
-import CreateAbcdQuestion from "@/components/create-question/create-abcd-question";
-import CreateWritingQuestion from "@/components/create-question/create-writing-question";
+import CreateAbcdQuestion from "@/components/create-question/create-edit-abcd-question-form";
+import CreateWritingQuestion from "@/components/create-question/create-edit-writing-question-form";
 
 export default function AddQuestion() {
   

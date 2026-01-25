@@ -13,13 +13,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Interceptor pre spracovanie 401 chýb (neautorizovaný)
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Presmerovať na login stránku ak je potrebné
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login') && !window.location.pathname.includes('/signup')) {
         window.location.href = '/login';
       }
     }

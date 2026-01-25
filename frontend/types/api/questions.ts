@@ -1,3 +1,5 @@
+import { Subject } from "./subjects";
+
 export interface AbcdAnswerResponse {
   id: string;
   answer: string;
@@ -20,8 +22,8 @@ export interface CreateEditQuestion {
 export interface QuestionResponse{
   id: string;
   questionText: string;
-  subjectId: string;
-  questionType: number;
+  subject: Subject;
+  questionType: string;
   abcdAnswers?: AbcdAnswerResponse[];
   answer?: string;
 }
