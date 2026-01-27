@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { CreateEditQuestion } from "@/types/api/questions";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Loader2, Save, Undo2, Type } from "lucide-react";
+import { Save, Undo2, Type } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function QuestionWritingForm({ id }: { id?: string }) {
   const router = useRouter();
@@ -55,7 +56,10 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
       answer: "",
       abcdAnswers: [],
     } as CreateEditQuestion,
-    onSubmit: async ({ value }) => mutation.mutate(value),
+    onSubmit: async ({ value }) => {
+      // Pre písomné otázky explicitne nastavíme abcdAnswers na null, aby backend nehlásil chybu
+      mutation.mutate({ ...value});
+    },
   });
 
   useEffect(() => {
@@ -70,11 +74,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
 }, [questionData, form]);
 
   if (isEdit && questionFetching) {
-    return (
-      <div className="flex h-48 items-center justify-center w-full">
-        <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
-      </div>
-    );
+    return <LoadingSpinner fullscreen={false} />;
   }
 
   return (
@@ -143,7 +143,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
                   disabled={mutation.isPending}
                   className="bg-orange-600 hover:bg-orange-700 h-10 px-6"
                 >
-                  {mutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                  <Save className="mr-2 h-4 w-4" />
                   {isEdit ? "Uložiť" : "Vytvoriť"}
                 </Button>
 

@@ -3,9 +3,10 @@
 import { useParams, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { startTest } from "@/api/tests";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { StartTestRequest } from "@/types/api/tests";
 import { Button } from "@/components/ui/button";
+import { Play, HelpCircle } from "lucide-react";
 
 export default function Test() {
   const params = useParams();
@@ -14,11 +15,16 @@ export default function Test() {
   const mutation = useMutation({
     mutationFn: (data: StartTestRequest) => startTest(data),
     onSuccess: (response) => {
-      console.log("Test spustený:", response);
-      router.push(`/tests/${params.id}/do`);
+      sessionStorage.setItem(`test_${response.testAttemptId}`, JSON.stringify({
+        testData: response,
+        answers: {},
+        timeLeft: response.timeLimitMinutes * 60,
+        currentQuestionIndex: 0,
+      }));
+      router.push(`/tests/${params.id}/attempt?attemptId=${response.testAttemptId}`);
     },
-    onError: () => {
-      console.log("Error pri test-start")
+    onError: (error) => {
+      console.error("Chyba pri spustení testu:", error);
     }
   });
 
@@ -33,12 +39,31 @@ export default function Test() {
     <div className="flex h-full w-full items-center justify-center p-6 md:p-10">
       <Card className="max-w-md w-full">
         <CardHeader>
-          <CardTitle>Spusti test</CardTitle>
+          <CardTitle className="text-2xl">Spustiť test</CardTitle>
+          <CardDescription>
+            Po spustení testu začne bežať časový limit
+          </CardDescription>
         </CardHeader>
-        <CardContent>
-          <p>Toto je test s id: {params.id}</p>
-          <Button onClick={handleStartTest} disabled={mutation.isPending}>
-            Spusti test
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <HelpCircle className="h-4 w-4" />
+            <span className="text-sm">Test ID: {params.id}</span>
+          </div>
+          
+          <Button 
+            onClick={handleStartTest} 
+            disabled={mutation.isPending}
+            size="lg"
+            className="w-full cursor-pointer"
+          >
+            {mutation.isPending ? (
+              "Spúšťam test..."
+            ) : (
+              <>
+                <Play className="h-4 w-4 mr-2" />
+                Spustiť test
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>

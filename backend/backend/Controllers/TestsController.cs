@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using backend.Dto.TestDto;
 using backend.Entities;
 using backend.Services;
@@ -31,30 +31,81 @@ public class TestsController : ControllerBase
 
     }
 
-    /*
-    [HttpPost("/create-test")]
-    [Authorize]
-    public async Task<ActionResult<Test>> CreateTest([FromBody] CreateTestDto dto)
+    [HttpPost("create-test")]
+    [Authorize(Roles = "Teacher,Admin")]
+    public async Task<ActionResult<CreateRandomTestResponseDto>> CreateTest([FromBody] CreateRandomTestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        var result = await testsService.CreateTest(Guid.Parse(userId), dto);
+        var result = await testsService.CreateRandomTest(Guid.Parse(userId), dto);
 
         return Ok(result);
 
-    }*/
+    }
 
-    /*
-    [HttpPost("start-test")]
-    public async Task<ActionResult<StartTestResponseDto>> CreateTest([FromBody] StartTestRequestDto dto)
+    [HttpPost("create-manual-test")]
+    [Authorize(Roles = "Teacher,Admin")]
+    public async Task<ActionResult<CreateManualTestResponseDto>> CreateManualTest([FromBody] CreateManualTestDto dto)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await testsService.CreateManualTestAsync(userId, dto);
+        return Ok(result);
+    }
+
+
+    [HttpPost("test-start")]
+    public async Task<ActionResult<StartTestResponseDto>> StartTest([FromBody] StartTestRequestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         var result = await testsService.StartTest(Guid.Parse(userId), dto.TestId);
 
         return Ok(result);
-
     }
-    */
+
+    [HttpGet("assigned")]
+    public async Task<ActionResult<List<AssignedTestListItemDto>>> GetAssignedTests()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await testsService.GetAssignedTestsAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("my-attempts")]
+    public async Task<ActionResult<List<AttemptResultListItemDto>>> GetMyAttempts()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await testsService.GetMyAttemptsAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpGet("student-attempts")]
+    [Authorize(Roles = "Teacher,Admin")]
+    public async Task<ActionResult<List<StudentAttemptResultListItemDto>>> GetStudentAttempts()
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var result = await testsService.GetStudentAttemptsAsync(userId);
+        return Ok(result);
+    }
+
+    [HttpPost("submit-answer")]
+    public async Task<ActionResult<bool>> SubmitAnswer([FromBody] SubmitAnswerDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var result = await testsService.SubmitAnswer(Guid.Parse(userId), dto);
+
+        return Ok(result);
+    }
+
+    [HttpPost("finish-test")]
+    public async Task<ActionResult<FinishTestResponseDto>> FinishTest([FromBody] FinishTestDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+        var result = await testsService.FinishTest(Guid.Parse(userId), dto);
+
+        return Ok(result);
+    }
 
 }

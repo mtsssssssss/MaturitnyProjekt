@@ -1,5 +1,5 @@
 import api from "./axios";
-import { LoginDto, RegisterDto, User } from "@/types/api/auth";
+import { LoginDto, RegisterDto, User, FullUser } from "@/types/api/auth";
 
 export const login = async (data: LoginDto): Promise<void> => {
   await api.post("/auth/login", data);
@@ -20,4 +20,9 @@ export const getMe = async (): Promise<User> => {
 
 export const refreshToken = async (): Promise<void> => {
   await api.post("/auth/refresh-token");
+};
+
+export const getFullUserInfo = async (): Promise<FullUser> => {
+  const { data } = await api.get<FullUser>("/auth/full-user-info");
+  return data;
 };

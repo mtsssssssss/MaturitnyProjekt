@@ -34,6 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<QuestionsService>();
 builder.Services.AddScoped<SubjectsService>();
 builder.Services.AddScoped<TestsService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 

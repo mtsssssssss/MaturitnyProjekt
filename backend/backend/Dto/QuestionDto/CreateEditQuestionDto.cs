@@ -5,9 +5,8 @@ namespace backend.Dto.QuestionDto;
 
 public sealed class CreateEditQuestionDto
 {
-    [MinLength(5), MaxLength(1000)]
     public string QuestionText { get; set; } = string.Empty; 
-    public string SubjectId { get; set; } = string.Empty;
+    public Guid SubjectId { get; set; }
     public QuestionType QuestionType { get; set; }
 
 

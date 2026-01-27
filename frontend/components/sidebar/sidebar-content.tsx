@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Edit3,
   Inbox,
@@ -19,6 +21,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import { useAuth } from "@/hooks/useAuth";
+
 const userItems = [
   {
     title: "Otestovať sa",
@@ -32,7 +36,7 @@ const userItems = [
   },
   {
     title: "Štatistiky",
-    url: "/tests/statistics",
+    url: "/stats",
     icon: BarChart2,
   },
 ];
@@ -69,61 +73,72 @@ const adminItems = [
 ];
 
 export default function SidebarContentMenu() {
+  const { userRole, isAuthenticated } = useAuth();
+
+  const isTeacherOrAdmin = userRole === "Teacher" || userRole === "Admin";
+  const isAdmin = userRole === "Admin";
+
   return (
     <SidebarContent>
-      <SidebarGroup>
-        <SidebarGroupLabel>Moje testy a štatistiky</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {userItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+      {isAuthenticated && (
+        <SidebarGroup>
+          <SidebarGroupLabel>Moje testy a štatistiky</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {userItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
 
-      <SidebarGroup>
-        <SidebarGroupLabel>Spravovanie testov</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {teacherItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+      {isTeacherOrAdmin && (
+        <SidebarGroup>
+          <SidebarGroupLabel>Spravovanie testov</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {teacherItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
 
-      <SidebarGroup>
-        <SidebarGroupLabel>Admin nástroje</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {adminItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+      {isAdmin && (
+        <SidebarGroup>
+          <SidebarGroupLabel>Admin nástroje</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {adminItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
     </SidebarContent>
   );
 }

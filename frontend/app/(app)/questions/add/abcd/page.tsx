@@ -1,4 +1,4 @@
-import QuestionAbcdForm from '@/components/create-question/create-edit-abcd-question-form'
+import QuestionAbcdForm from '@/components/create-edit-question/create-edit-abcd-question-form'
 
 
 export default function CreateAbcdQuestion() {

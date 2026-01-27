@@ -16,7 +16,7 @@ export interface CreateEditQuestion {
   subjectId: string;
   questionType: number;
   abcdAnswers?: CreateEditAbcdAnswer[];
-  answer?: string;
+  answer?: string | null;
 }
 
 export interface QuestionResponse{

@@ -15,6 +15,14 @@ public sealed class QuestionsController : ControllerBase
         this.questionsService = questionsService;
     }
 
+    [HttpPost("bulk-insert")]
+    public async Task<IActionResult> CreateQuestionsBulkAsync(IEnumerable<CreateEditQuestionDto> dto)
+    {
+        var created = await questionsService.CreateQuestionsBulkAsync(dto);
+        return Ok();
+    }
+
+
     [HttpPost]
     public async Task<ActionResult<QuestionResponseDto>> CreateQuestion([FromBody] CreateEditQuestionDto dto)
     {

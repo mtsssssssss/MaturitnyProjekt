@@ -12,7 +12,8 @@ import { getSubjects } from "@/api/subjects";
 import { createQuestion, getQuestion, updateQuestion } from "@/api/questions";
 import { CreateEditQuestion } from "@/types/api/questions";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Loader2, Save, Undo2, ListChecks, Plus, Trash2 } from "lucide-react";
+import { Save, Undo2, ListChecks, Plus, Trash2 } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export default function QuestionAbcdForm({ id }: { id?: string }) {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
         { answer: "", isRight: false },
         { answer: "", isRight: false },
       ],
-      answer: "",
+      answer: null,
     } as CreateEditQuestion,
     onSubmit: async ({ value }) => {
       mutation.mutate(value);
@@ -83,11 +84,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
   }, [questionData, form]);
 
   if (isEdit && questionFetching) {
-    return (
-      <div className="flex h-48 items-center justify-center w-full">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-      </div>
-    );
+    return <LoadingSpinner fullscreen={false} />;
   }
 
   return (
@@ -255,11 +252,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                   disabled={mutation.isPending}
                   className="bg-blue-600 hover:bg-blue-700 text-white h-10 px-8 shadow-md shadow-blue-100"
                 >
-                  {mutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="mr-2 h-4 w-4" />
-                  )}
+                  <Save className="mr-2 h-4 w-4" />
                   {isEdit ? "Uložiť zmeny" : "Vytvoriť otázku"}
                 </Button>
               </div>

@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Loader2, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, XCircle, ListChecks, Type } from "lucide-react";
+import { Plus, Pencil, Trash2, HelpCircle, ChevronDown, ChevronUp, CheckCircle2, ListChecks, Type } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -39,11 +40,7 @@ export default function QuestionsPage() {
     },
   });
 
-  if (isLoading) return (
-    <div className="flex h-screen items-center justify-center">
-      <Loader2 className="h-10 w-10 animate-spin text-primary" />
-    </div>
-  );
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="py-6 md:py-10 space-y-6 w-[98%] md:w-[95%] mx-auto">
@@ -80,10 +77,8 @@ export default function QuestionsPage() {
           <TableHeader className="bg-slate-50/80">
             <TableRow>
               <TableHead className="w-[40px] md:w-[50px]"></TableHead>
-              {/* SKRYTÉ NA MOBILE (hidden), VIDITEĽNÉ OD TABLETU (md:table-cell) */}
               <TableHead className="hidden md:table-cell w-[180px] font-bold">Predmet</TableHead>
               <TableHead className="font-bold">Text otázky</TableHead>
-              {/* SKRYTÉ NA MOBILE */}
               <TableHead className="hidden md:table-cell w-[120px] font-bold text-center">Typ</TableHead>
               <TableHead className="w-[100px] md:w-[120px] text-right font-bold">Akcie</TableHead>
             </TableRow>
@@ -95,11 +90,10 @@ export default function QuestionsPage() {
                 <Fragment key={question.id}>
                   <TableRow className={cn("hover:bg-slate-50/50 transition-colors", isExpanded && "bg-slate-50/30")}>
                     <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => toggleRow(question.id)} className="h-8 w-8">
+                      <Button variant="ghost" size="icon" onClick={() => toggleRow(question.id)} className="h-8 w-8 cursor-pointer">
                         {isExpanded ? <ChevronUp className="h-4 w-4 text-primary" /> : <ChevronDown className="h-4 w-4" />}
                       </Button>
                     </TableCell>
-                    {/* SKRYTÉ NA MOBILE */}
                     <TableCell className="hidden md:table-cell">
                       <div className="flex flex-col">
                         <span className="font-bold text-slate-900 leading-none mb-1">{question.subject.subjectAbbrev}</span>
@@ -109,7 +103,6 @@ export default function QuestionsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="font-medium text-slate-700 py-4">
-                      {/* Na mobile môžeme zobraziť skratku predmetu nad textom, aby info nechýbalo úplne */}
                       <div className="md:hidden text-[10px] font-bold text-primary uppercase mb-1">
                         {question.subject.subjectAbbrev} • {question.questionType}
                       </div>
@@ -117,7 +110,6 @@ export default function QuestionsPage() {
                         {question.questionText}
                       </div>
                     </TableCell>
-                    {/* SKRYTÉ NA MOBILE */}
                     <TableCell className="hidden md:table-cell text-center">
                       <Badge className="font-bold shadow-none" variant={question.questionType === "Abcd" ? "default" : "secondary"}>
                         {question.questionType}
@@ -125,13 +117,13 @@ export default function QuestionsPage() {
                     </TableCell>
                     <TableCell className="text-right px-2 md:px-4">
                       <div className="flex justify-end gap-1 md:gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => router.push(`/questions/edit/${question.id}/${question.questionType.toLowerCase()}`)}>
+                        <Button variant="outline" size="icon" className="h-8 w-8 cursor-pointer" onClick={() => router.push(`/questions/edit/${question.id}/${question.questionType.toLowerCase()}`)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
                         <Button 
                           variant="destructive" 
                           size="icon" 
-                          className="h-8 w-8" 
+                          className="h-8 w-8 cursor-pointer" 
                           onClick={() => confirm("Zmazať?") && deleteMutation.mutate(question.id)}
                           disabled={deleteMutation.isPending}
                         >
@@ -143,10 +135,8 @@ export default function QuestionsPage() {
                   
                   {isExpanded && (
                     <TableRow className="bg-slate-50/30 hover:bg-slate-50/30">
-                      {/* colSpan upravený na 3 pre mobil (Expand + Text + Akcie), na md ostáva 5 */}
                       <TableCell colSpan={5} className="p-2 md:p-4 border-t">
                         <div className="bg-white border rounded-xl p-3 md:p-5 shadow-sm animate-in fade-in slide-in-from-top-1 duration-200">
-                          {/* V detaile na mobile ukážeme to, čo sme v riadku skryli */}
                           <div className="md:hidden mb-4 pb-2 border-b flex justify-between items-end">
                             <div className="flex flex-col">
                               <span className="text-[10px] font-bold text-muted-foreground uppercase">Predmet</span>

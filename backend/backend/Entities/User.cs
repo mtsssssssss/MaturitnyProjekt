@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Entities;
@@ -29,5 +29,8 @@ public sealed class User
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public ICollection<Test> Tests { get; set; } = new List<Test>();
+
+    public ICollection<TestAssignment> TestAssignments { get; set; } = new List<TestAssignment>();
+    public ICollection<TestAssignment> AssignedTests { get; set; } = new List<TestAssignment>();
 }
 

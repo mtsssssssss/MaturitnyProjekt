@@ -1,6 +1,6 @@
 "use client";
 
-import QuestionWritingForm from "@/components/create-question/create-edit-writing-question-form";
+import QuestionWritingForm from "@/components/create-edit-question/create-edit-writing-question-form";
 import { useParams } from "next/navigation";
 
 export default function EditAbcdQuestion() {

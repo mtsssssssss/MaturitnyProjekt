@@ -1,12 +1,14 @@
-﻿using backend.Data;
+using backend.Data;
 
 namespace backend.Dto.TestDto;
 
 public sealed class StartTestResponseDto
 {
     public Guid Id { get; set; }
-    public Guid SubjectId { get; set; }
-    public int Time { get; set; }
+    public Guid TestAttemptId { get; set; }
+    public string TestName { get; set; } = string.Empty;
+    public string TestDescription { get; set; } = string.Empty;
+    public int TimeLimitMinutes { get; set; }
 
     public List<QuestionResponseDto> Questions { get; set; } = [];
 }

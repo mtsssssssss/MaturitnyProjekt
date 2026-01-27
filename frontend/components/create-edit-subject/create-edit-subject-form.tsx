@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSubject, createSubject, updateSubject, getSubjects } from "@/api/subjects";
 import { useRouter } from "next/navigation";
-import { Loader2, Save, Undo2, BookOpen } from "lucide-react";
+import { Save, Undo2, BookOpen } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { CreateEditSubject } from "@/types/api/subjects";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect } from "react";
@@ -62,11 +63,7 @@ export default function SubjectForm({ id }: { id?: string }) {
 
 
   if (isEdit && isFetching) {
-    return (
-      <div className="flex h-64 items-center justify-center w-full">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      </div>
-    );
+    return <LoadingSpinner fullscreen={false} />;
   }
 
   return (
@@ -132,11 +129,7 @@ export default function SubjectForm({ id }: { id?: string }) {
                 disabled={mutation.isPending}
                 className="bg-orange-600 hover:bg-orange-700 text-white px-8 h-11"
               >
-                {mutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="mr-2 h-4 w-4" />
-                )}
+                <Save className="mr-2 h-4 w-4" />
                 {isEdit ? "Uložiť zmeny" : "Vytvoriť predmet"}
               </Button>
 

@@ -4,6 +4,15 @@ export type User = {
   role?: string;
 };
 
+export type FullUser = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  fullname: string;
+  role: string;
+};
+
 export type LoginDto = {
   username: string;
   password: string;

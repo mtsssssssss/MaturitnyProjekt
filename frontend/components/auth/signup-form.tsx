@@ -114,7 +114,7 @@ export function SignupForm({
               children={(field) => (
                 <TanStackFormInput
                   field={field}
-                  label="Prihlasovacie meno"
+                  label="Priezvisko"
                   placeholder="napr. Čiernik "
                   className="h-11"
                 />

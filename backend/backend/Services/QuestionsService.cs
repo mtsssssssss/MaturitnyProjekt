@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using backend.Data;
+﻿using backend.Data;
 using backend.Dto.QuestionDto;
 using backend.Dto.SubjectDto;
 using backend.Entities;
@@ -16,6 +15,79 @@ public sealed class QuestionsService
     {
         this.dbContext = dbContext;
     }
+
+    public async Task<List<QuestionResponseDto>> CreateQuestionsBulkAsync(IEnumerable<CreateEditQuestionDto> dtos)
+    {
+        if (dtos == null || !dtos.Any())
+            throw new ValidationException("Zoznam otázok nesmie byť prázdny.");
+
+        // Optimalizácia: Vytiahneme si ID všetkých predmetov, ktoré sú v DTOs
+        var subjectIds = dtos.Select(d => d.SubjectId).Distinct().ToList();
+        var subjects = await dbContext.Subjects
+            .Where(s => subjectIds.Contains(s.Id))
+            .ToDictionaryAsync(s => s.Id);
+
+        var questionsToAdd = new List<Question>();
+
+        foreach (var dto in dtos)
+        {
+            // Kontrola, či predmet existuje v našom vytiahnutom slovníku
+            if (!subjects.TryGetValue(dto.SubjectId, out var subject))
+                throw new NotFoundException($"Predmet s ID {dto.SubjectId} neexistuje.");
+
+            Question question;
+
+            if (dto.QuestionType == QuestionType.Abcd)
+            {
+                if (dto.AbcdAnswers == null || dto.AbcdAnswers.Count < 2)
+                    throw new ValidationException($"Otázka '{dto.QuestionText}' musí mať minimálne 2 odpovede.");
+
+                if (dto.AbcdAnswers.Count(a => a.IsRight) != 1)
+                    throw new ValidationException($"Otázka '{dto.QuestionText}' musí mať presne jednu správnu odpoveď.");
+
+                question = new AbcdQuestion
+                {
+                    QuestionText = dto.QuestionText,
+                    Subject = subject,
+                    QuestionType = dto.QuestionType,
+                    AbcdQuestionAnswers = dto.AbcdAnswers
+                        .Select(a => new AbcdQuestionAnswer
+                        {
+                            Answer = a.Answer,
+                            IsRight = a.IsRight
+                        })
+                        .ToList()
+                };
+            }
+            else if (dto.QuestionType == QuestionType.Writing)
+            {
+                if (string.IsNullOrWhiteSpace(dto.Answer))
+                    throw new ValidationException($"Písomná otázka '{dto.QuestionText}' musí mať odpoveď.");
+
+                question = new WritingQuestion
+                {
+                    QuestionText = dto.QuestionText,
+                    Subject = subject,
+                    QuestionType = dto.QuestionType,
+                    Answer = dto.Answer
+                };
+            }
+            else
+            {
+                throw new ValidationException("Neplatný typ otázky.");
+            }
+
+            questionsToAdd.Add(question);
+        }
+
+        // Hromadné pridanie do kontextu
+        await dbContext.Questions.AddRangeAsync(questionsToAdd);
+        await dbContext.SaveChangesAsync();
+
+        // Mapovanie výsledkov späť na DTOs
+        return questionsToAdd.Select(q => MapToResponseDto(q)).ToList();
+    }
+
 
     public async Task<QuestionResponseDto> CreateQuestionAsync(CreateEditQuestionDto dto)
     {
@@ -75,25 +147,9 @@ public sealed class QuestionsService
 
     public async Task<List<QuestionResponseDto>> GetQuestionsListAsync()
     {
-        /*
-        var abcdQuestions = await dbContext.Questions
-            .OfType<AbcdQuestion>()
-            .Include(q => q.AbcdQuestionAnswers)
-            .Include(q => q.Subject)
-            .ToListAsync();
-
-        var writingQuestions = await dbContext.Questions
-            .OfType<WritingQuestion>()
-            .Include(q => q.Subject)
-            .ToListAsync();
-
-        var questions = abcdQuestions.Cast<Question>().Concat(writingQuestions).ToList();
-        */
-
-
         var questions = await dbContext.Questions
-        .Include(q => q.Subject) // Toto je na Question, pôjde to pre všetko
-        .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers) // Podmienený include
+        .Include(q => q.Subject)
+        .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
         .ToListAsync();
 
         return questions.Select(MapToResponseDto).ToList();
@@ -113,6 +169,7 @@ public sealed class QuestionsService
         return MapToResponseDto(question);
     }
 
+
     public async Task<QuestionResponseDto> EditQuestionAsync(Guid id, CreateEditQuestionDto dto)
     {
         var question = await dbContext.Questions
@@ -128,7 +185,7 @@ public sealed class QuestionsService
             throw new NotFoundException("Predmet neexistuje.");
 
         question.QuestionText = dto.QuestionText;
-        question.SubjectId = Guid.Parse(dto.SubjectId);
+        question.SubjectId = dto.SubjectId;
         question.Subject = subject; 
 
         if (question is AbcdQuestion abcdQuestion)
@@ -156,6 +213,7 @@ public sealed class QuestionsService
         return MapToResponseDto(question);
     }
 
+
     private void ValidateAbcdAnswers(List<CreateEditAbcdAnswerDto>? answers)
     {
         if (answers == null || answers.Count < 2)
@@ -164,6 +222,7 @@ public sealed class QuestionsService
         if (answers.Count(a => a.IsRight) != 1)
             throw new ValidationException("ABCD otázka musí mať presne jednu správnu odpoveď.");
     }
+
 
     public async Task DeleteQuestionAsync(Guid id)
     {
@@ -175,21 +234,6 @@ public sealed class QuestionsService
         await dbContext.SaveChangesAsync();
     }
 
-    // ----- TODO ----- //
-    /*
-    public async Task<List<QuestionResponseDto>> GetRandomQuestions(Guid subjectId, int count = 1)
-    {
-
-        var questions = await dbContext.Questions
-            .Where(s => s.SubjectId == subjectId)
-            .Include(q => q.Subject)
-            .Include(q => (q as AbcdQuestion).AbcdQuestionAnswers)
-            .OrderBy(_ => Guid.NewGuid());
-            
-
-        return questions.Select(MapToResponseDto).ToList();
-
-    }*/
 
     private QuestionResponseDto MapToResponseDto(Question question)
     {

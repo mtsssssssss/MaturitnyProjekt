@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using backend.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +23,10 @@ public class AppDbContext : DbContext
 
     public DbSet<Test> Tests { get; set; }
     public DbSet<TestQuestion> TestQuestions { get; set; }
+    public DbSet<TestAssignment> TestAssignments { get; set; }
 
 
-    public DbSet<Test> TestAttempts { get; set; }
+    public DbSet<TestAttempt> TestAttempts { get; set; }
     public DbSet<TestAttemptUserAnswer> TestAttemptUserAnswers { get; set; }
 
 
@@ -111,6 +112,28 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TestAttemptUserAnswer>()
             .HasIndex(t =>  new { t.TestAttemptId, t.QuestionId})
             .IsUnique();
+
+        modelBuilder.Entity<TestAssignment>()
+            .HasIndex(a => new { a.TestId, a.UserId })
+            .IsUnique();
+
+        modelBuilder.Entity<TestAssignment>()
+            .HasOne(a => a.Test)
+            .WithMany(t => t.TestAssignments)
+            .HasForeignKey(a => a.TestId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TestAssignment>()
+            .HasOne(a => a.User)
+            .WithMany(u => u.TestAssignments)
+            .HasForeignKey(a => a.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TestAssignment>()
+            .HasOne(a => a.AssignedByUser)
+            .WithMany(u => u.AssignedTests)
+            .HasForeignKey(a => a.AssignedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 
 }

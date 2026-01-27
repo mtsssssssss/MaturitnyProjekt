@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -16,6 +16,9 @@ public sealed class Test
     public int TimeLimitMinutes { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public Guid CreatedByUserId { get; set; }
+    public User CreatedByUser { get; set; } = null!;
+
     public ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
 
     /*
@@ -28,5 +31,7 @@ public sealed class Test
 
 
     public ICollection<TestAttempt> TestAttempts { get; set; } = new List<TestAttempt>();
+
+    public ICollection<TestAssignment> TestAssignments { get; set; } = new List<TestAssignment>();
 
 }
