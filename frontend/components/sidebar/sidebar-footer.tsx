@@ -18,7 +18,7 @@ export default function SidebarFooterManageUser() {
   const router = useRouter();
 
   const { data: fullUser } = useQuery({
-    queryKey: ["full-user-info"],
+    queryKey: ["full-user-info", "me"],
     queryFn: getFullUserInfo,
     enabled: !!user,
   });
@@ -38,7 +38,6 @@ export default function SidebarFooterManageUser() {
         <SidebarMenuItem>
           <DropdownMenuPrimitive.Root>
             <DropdownMenuPrimitive.Trigger asChild>
-              {/* Vylepšený button s jemným hoverom a lepším paddingom */}
               <SidebarMenuButton 
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground transition-all duration-200"
@@ -58,7 +57,6 @@ export default function SidebarFooterManageUser() {
               </SidebarMenuButton>
             </DropdownMenuPrimitive.Trigger>
 
-            {/* UPRAVENÝ CONTENT: Pridaný shadow, border a animácie */}
             <DropdownMenuPrimitive.Portal>
                 <DropdownMenuPrimitive.Content
                 side="top"

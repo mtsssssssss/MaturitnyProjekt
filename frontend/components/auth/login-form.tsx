@@ -9,13 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldGroup } from "@/components/ui/field";
+import { FieldGroup } from "@/components/ui/field";
 import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { LoginDto } from "@/types/api/auth";
 import { TanStackFormInput } from "@/components/custom-form-inputs/form-input";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -26,7 +27,7 @@ export default function LoginForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const { login } = useAuth();
-  const [isPending, setIsPending] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -42,11 +43,12 @@ export default function LoginForm({
       }),
     },
     onSubmit: async ({ value }: { value: LoginDto }) => {
+      setAuthError(null);
       try {
         await login(value);
         router.push("/dashboard");
       } catch (e) {
-        console.error("Login failed", e);
+        setAuthError(getApiErrorMessage(e));
       }
     },
   });
@@ -74,6 +76,14 @@ export default function LoginForm({
             }}
           >
             <FieldGroup className="space-y-4">
+              {authError && (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+                >
+                  {authError}
+                </div>
+              )}
               <form.Field
                 name="username"
                 children={(field) => (
@@ -98,14 +108,17 @@ export default function LoginForm({
                   />
                 )}
               />
-              
-              {/* Sekcia s akciami - pridaný spacing pt-2 a space-y-4 */}
               <div className="pt-2 space-y-4">
                 <Button
                   type="submit"
+                  disabled={form.state.isSubmitting}
                   className="w-full h-11 text-base font-semibold transition-all hover:opacity-90"
                 >
-                  Prihlásiť sa
+                  {form.state.isSubmitting ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    "Prihlásiť sa"
+                  )}
                 </Button>
 
                 <div className="text-center text-sm">

@@ -1,14 +1,13 @@
+using System.Security.Claims;
 using backend.Dto.AuthDto;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace backend.Controllers;
 
 [ApiController]
-[Route("api/auth")]
+[Route("api/[controller]")]
 public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService authService;
@@ -28,9 +27,8 @@ public sealed class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginDto dto)
     {
-        var (accessToken, refreshToken) = await authService.LoginAsync(dto);
-
-        SetCookies(accessToken, refreshToken.Token, refreshToken.ExpiresAt);
+        var result = await authService.LoginAsync(dto);
+        SetCookies(result.AccessToken, result.RefreshToken.Token, result.RefreshToken.ExpiresAt);
         return Ok();
     }
 
@@ -40,9 +38,8 @@ public sealed class AuthController : ControllerBase
         if (!Request.Cookies.TryGetValue("refresh_token", out var token))
             return Unauthorized();
 
-        var (accessToken, newRefresh) = await authService.RefreshAsync(token);
-
-        SetCookies(accessToken, newRefresh.Token, newRefresh.ExpiresAt);
+        var result = await authService.RefreshAsync(token);
+        SetCookies(result.AccessToken, result.RefreshToken.Token, result.RefreshToken.ExpiresAt);
         return Ok();
     }
 

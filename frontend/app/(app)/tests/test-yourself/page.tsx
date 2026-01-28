@@ -58,7 +58,6 @@ export default function Page() {
     },
     onSubmit: async ({ value }) => {
       mutation.mutate(value);
-      console.log(value);
     },
   });
 
@@ -79,15 +78,11 @@ export default function Page() {
               }}
             >
               <FieldGroup>
-                {/* A type-safe field component*/}
                 <form.Field
                   name="time"
-                  children={(field) => {
-                    // Avoid hasty abstractions. Render props are great!
-                    return (
-                      <TanStackFormInput field={field} type="number" label="Čas na vypracovanie testu (min)"  />
-                    );
-                  }}
+                  children={(field) => (
+                    <TanStackFormInput field={field} type="number" label="Čas na vypracovanie testu (min)" />
+                  )}
                 />
 
                 <form.Field

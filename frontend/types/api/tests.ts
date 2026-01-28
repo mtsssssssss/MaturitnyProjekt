@@ -61,6 +61,7 @@ export type AttemptResultListItem = {
   testAttemptId: string;
   testId: string;
   testName: string;
+  subjectName: string;
   testStarted?: string | null;
   testFinished?: string | null;
   totalQuestions: number;

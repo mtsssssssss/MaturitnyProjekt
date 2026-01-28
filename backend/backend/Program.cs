@@ -30,11 +30,10 @@ builder.Services.AddCors(opt =>
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjekt")));
 
-// pridanie mojich Servicov do DI
-builder.Services.AddScoped<QuestionsService>();
-builder.Services.AddScoped<SubjectsService>();
-builder.Services.AddScoped<TestsService>();
-builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<IQuestionsService, QuestionsService>();
+builder.Services.AddScoped<ISubjectsService, SubjectsService>();
+builder.Services.AddScoped<ITestsService, TestsService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 

@@ -38,10 +38,8 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
   }));
 
   const mutation = useMutation({
-    mutationFn: (values: CreateEditQuestion) =>{
-      console.log(values)
-      return isEdit ? updateQuestion(id!, values) : createQuestion(values);
-    },      
+    mutationFn: (values: CreateEditQuestion) =>
+      isEdit ? updateQuestion(id!, values) : createQuestion(values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["questions"] });
       router.push("/questions");
@@ -57,8 +55,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
       abcdAnswers: [],
     } as CreateEditQuestion,
     onSubmit: async ({ value }) => {
-      // Pre písomné otázky explicitne nastavíme abcdAnswers na null, aby backend nehlásil chybu
-      mutation.mutate({ ...value});
+      mutation.mutate({ ...value });
     },
   });
 
@@ -79,18 +76,18 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
 
   return (
     <div className="w-full max-w-xl mx-auto py-6 px-4">
-      <Card className="shadow-md border-slate-200 bg-white">
-        <CardHeader className="bg-slate-50/50 border-b py-4 px-6">
+      <Card className="shadow-lg border-border bg-card">
+        <CardHeader className="bg-muted/30 border-b py-4 px-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Type className="h-5 w-5 text-orange-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <Type className="h-5 w-5 text-primary" />
             </div>
-            <CardTitle className="text-xl font-bold text-slate-900">
+            <CardTitle className="text-xl font-bold">
               {isEdit ? "Upraviť otázku" : "Nová otázka"}
             </CardTitle>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-6">
           <form
             onSubmit={(e) => {
@@ -141,7 +138,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
                 <Button
                   type="submit"
                   disabled={mutation.isPending}
-                  className="bg-orange-600 hover:bg-orange-700 h-10 px-6"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground h-10 px-6"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   {isEdit ? "Uložiť" : "Vytvoriť"}
@@ -151,7 +148,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
                   type="button"
                   variant="ghost"
                   onClick={() => router.push("/questions")}
-                  className="h-10 text-slate-500"
+                  className="h-10 text-muted-foreground"
                 >
                   <Undo2 className="mr-2 h-4 w-4" />
                   Zrušiť

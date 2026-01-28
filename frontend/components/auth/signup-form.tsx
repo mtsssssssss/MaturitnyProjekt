@@ -16,7 +16,9 @@ import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { TanStackFormInput } from "../custom-form-inputs/form-input";
 import { RegisterDto } from "@/types/api/auth";
+import { getApiErrorMessage } from "@/lib/api-error";
 import { Loader2, UserPlus } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
 
 export function SignupForm({
@@ -25,6 +27,7 @@ export function SignupForm({
 }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
   const { register } = useAuth();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const form = useForm({
     defaultValues: {
@@ -40,8 +43,8 @@ export function SignupForm({
           username: z
             .string()
             .min(3, "Prihlasovacie meno musí mať minimálne 3 znaky"),
-            firstName: z.string().min(1, "Zadaj svoje meno!"),
-            lastName: z.string().min(1, "Zadaj svoje priezvisko!"),
+          firstName: z.string().min(1, "Zadaj svoje meno!"),
+          lastName: z.string().min(1, "Zadaj svoje priezvisko!"),
           password: z.string().min(6, "Heslo musí mať minimálne 6 znakov"),
           confirmPassword: z.string(),
         })
@@ -50,12 +53,19 @@ export function SignupForm({
           path: ["confirmPassword"],
         }),
     },
-    onSubmit: async ({ value }: { value: RegisterDto }) => {
+    onSubmit: async ({ value }) => {
+      setAuthError(null);
+      const dto: RegisterDto = {
+        username: value.username,
+        firstName: value.firstName,
+        lastName: value.lastName,
+        password: value.password,
+      };
       try {
-        await register(value);
+        await register(dto);
         router.push("/dashboard");
       } catch (e) {
-        console.error("Registration failed", e);
+        setAuthError(getApiErrorMessage(e));
       }
     },
   });
@@ -87,6 +97,14 @@ export function SignupForm({
           }}
         >
           <FieldGroup className="space-y-4">
+            {authError && (
+              <div
+                role="alert"
+                className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+              >
+                {authError}
+              </div>
+            )}
             <form.Field
               name="username"
               children={(field) => (
@@ -148,8 +166,15 @@ export function SignupForm({
             <div className="pt-2 space-y-4">
               <Button
                 type="submit"
+                disabled={form.state.isSubmitting}
                 className="w-full h-11 text-base font-semibold"
-              >Zaregistrovať sa</Button>
+              >
+                {form.state.isSubmitting ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  "Zaregistrovať sa"
+                )}
+              </Button>
 
               <div className="text-center text-sm">
                 <span className="text-muted-foreground">Už máte účet? </span>

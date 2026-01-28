@@ -1,4 +1,4 @@
-﻿using backend.Dto.SubjectDto;
+using backend.Dto.SubjectDto;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +8,9 @@ namespace backend.Controllers;
 [ApiController]
 public sealed class SubjectsController : ControllerBase
 {
-    private readonly SubjectsService subjectsService;
+    private readonly ISubjectsService subjectsService;
 
-    public SubjectsController(SubjectsService subjectsService)
+    public SubjectsController(ISubjectsService subjectsService)
     {
         this.subjectsService = subjectsService;
     }

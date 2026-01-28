@@ -68,17 +68,17 @@ export default function SubjectForm({ id }: { id?: string }) {
 
   return (
     <div className="w-full max-w-2xl mx-auto py-10 px-4">
-      <Card className="shadow-lg border-slate-200 w-full bg-white">
-        <CardHeader className="space-y-4 bg-slate-50/50 border-b p-6">
+      <Card className="shadow-lg border-border w-full bg-card">
+        <CardHeader className="space-y-4 bg-muted/30 border-b p-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-white border shadow-sm rounded-xl">
-              <BookOpen className="h-6 w-6 text-orange-600" />
+            <div className="p-3 bg-primary/10 rounded-xl">
+              <BookOpen className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold text-slate-900">
+              <CardTitle className="text-2xl font-bold">
                 {isEdit ? "Upraviť predmet" : "Nový predmet"}
               </CardTitle>
-              <CardDescription className="text-slate-500">
+              <CardDescription>
                 {isEdit 
                   ? "Upravte údaje existujúceho predmetu." 
                   : "Pridajte nový vyučovací predmet do systému."}
@@ -96,9 +96,6 @@ export default function SubjectForm({ id }: { id?: string }) {
             }}
             className="flex flex-col gap-6"
           >
-            {/* Kritika: Skontroluj tvoj komponent FieldGroup, 
-               či v CSS nemá nastavené niečo ako width: min-content 
-            */}
             <div className="space-y-6 w-full">
               <form.Field
                 name="subjectAbbrev"

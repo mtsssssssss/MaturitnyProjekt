@@ -1,4 +1,4 @@
-﻿using backend.Dto.QuestionDto;
+using backend.Dto.QuestionDto;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,9 +8,9 @@ namespace backend.Controllers;
 [ApiController]
 public sealed class QuestionsController : ControllerBase
 {
-    private readonly QuestionsService questionsService;
+    private readonly IQuestionsService questionsService;
 
-    public QuestionsController(QuestionsService questionsService)
+    public QuestionsController(IQuestionsService questionsService)
     {
         this.questionsService = questionsService;
     }

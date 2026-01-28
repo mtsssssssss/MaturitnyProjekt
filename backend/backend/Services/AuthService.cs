@@ -1,10 +1,9 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using backend.Data;
 using backend.Dto.AuthDto;
-using backend.Dto.SubjectDto;
 using backend.Entities;
 using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +41,7 @@ public sealed class AuthService : IAuthService
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task<(string accessToken, RefreshToken refreshToken)> LoginAsync(LoginDto dto)
+    public async Task<TokenResult> LoginAsync(LoginDto dto)
     {
         var user = await dbContext.Users
             .Include(x => x.RefreshTokens)
@@ -52,7 +51,6 @@ public sealed class AuthService : IAuthService
             throw new UnauthorizedException("Neplatné prihlasovacie údaje.");
 
         var accessToken = GenerateAccessToken(user);
-
         var refreshToken = new RefreshToken
         {
             UserId = user.Id,
@@ -63,10 +61,10 @@ public sealed class AuthService : IAuthService
         dbContext.RefreshTokens.Add(refreshToken);
         await dbContext.SaveChangesAsync();
 
-        return (accessToken, refreshToken);
+        return new TokenResult { AccessToken = accessToken, RefreshToken = refreshToken };
     }
 
-    public async Task<(string accessToken, RefreshToken refreshToken)> RefreshAsync(string token)
+    public async Task<TokenResult> RefreshAsync(string token)
     {
         var refreshToken = await dbContext.RefreshTokens
             .Include(x => x.User)
@@ -92,7 +90,7 @@ public sealed class AuthService : IAuthService
         var accessToken = GenerateAccessToken(refreshToken.User);
         await dbContext.SaveChangesAsync();
 
-        return (accessToken, newRefresh);
+        return new TokenResult { AccessToken = accessToken, RefreshToken = newRefresh };
     }
 
     public async Task RevokeRefreshTokenAsync(string token)
@@ -118,8 +116,6 @@ public sealed class AuthService : IAuthService
             .FirstOrDefaultAsync();
 
         return MapToResponseDto(user!);
-
-
     }
 
     private UserFullInfoResponseDto MapToResponseDto(User user)

@@ -21,17 +21,12 @@ public sealed class Test
 
     public ICollection<TestQuestion> TestQuestions { get; set; } = new List<TestQuestion>();
 
-    /*
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-    */
 
     public Guid SubjectId { get; set; }
     public Subject Subject { get; set; } = null!;
 
 
     public ICollection<TestAttempt> TestAttempts { get; set; } = new List<TestAttempt>();
-
     public ICollection<TestAssignment> TestAssignments { get; set; } = new List<TestAssignment>();
 
 }

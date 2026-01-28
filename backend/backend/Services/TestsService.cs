@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
 
-public class TestsService
+public class TestsService : ITestsService
 {
     private readonly AppDbContext dbContext;
+
     public TestsService(AppDbContext dbContext)
     {
         this.dbContext = dbContext;
@@ -140,6 +141,7 @@ public class TestsService
     public async Task<List<AttemptResultListItemDto>> GetMyAttemptsAsync(Guid userId)
     {
         var attempts = await dbContext.TestAttempts
+            .Include(a => a.Test).ThenInclude(t => t.Subject)
             .Where(a => a.UserId == userId && a.TestStatus == TestStatus.Finished)
             .OrderByDescending(a => a.TestFinished)
             .Select(a => new AttemptResultListItemDto
@@ -147,6 +149,7 @@ public class TestsService
                 TestAttemptId = a.Id,
                 TestId = a.TestId,
                 TestName = a.Test.TestName,
+                SubjectName = a.Test.Subject.SubjectName,
                 TestStarted = a.TestStarted,
                 TestFinished = a.TestFinished,
                 TotalQuestions = a.TotalQuestions,
@@ -160,8 +163,9 @@ public class TestsService
 
     public async Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync(Guid teacherUserId)
     {
-        // učiteľ vidí výsledky len pre testy, ktoré vytvoril on
         var attempts = await dbContext.TestAttempts
+            .Include(a => a.Test).ThenInclude(t => t.Subject)
+            .Include(a => a.User)
             .Where(a => a.TestStatus == TestStatus.Finished && a.Test.CreatedByUserId == teacherUserId)
             .OrderByDescending(a => a.TestFinished)
             .Select(a => new StudentAttemptResultListItemDto
@@ -169,6 +173,7 @@ public class TestsService
                 TestAttemptId = a.Id,
                 TestId = a.TestId,
                 TestName = a.Test.TestName,
+                SubjectName = a.Test.Subject.SubjectName,
                 TestStarted = a.TestStarted,
                 TestFinished = a.TestFinished,
                 TotalQuestions = a.TotalQuestions,
@@ -184,39 +189,6 @@ public class TestsService
         return attempts;
     }
 
-    /*
-    public async Task<CreateRandomTestResponseDto> CreateTest(Guid userId, CreateRandomTestDto dto)
-    {
-
-        // https://stackoverflow.com/questions/7781893/ef-code-first-how-to-get-random-rows
-        var subject = await dbContext.Subjects.FirstOrDefaultAsync(s => s.Id == dto.SubjectId);
-
-        if (subject == null)
-            throw new NotFoundException("Predmet neexistuje.");
-        
-
-
-        var generatedTest = new Test
-        {
-            SubjectId = dto.SubjectId,
-            TestName = subject.SubjectAbbrev + " Test",
-            TestDescription = "Prípravný test z predmetu " + subject.SubjectName,
-            TimeLimitMinutes = dto.Time,
-            TestQuestions = randomQuestions.Select(q => new TestQuestion
-            {
-                QuestionId = q.Id
-            }).ToList()
-        };
-
-        dbContext.Tests.Add(generatedTest);
-        await dbContext.SaveChangesAsync();
-
-        return new CreateRandomTestResponseDto
-        {
-            Id = generatedTest.Id,
-        };
-    }
-    */
 
     public async Task<StartTestResponseDto> StartTest(Guid userId, Guid testId)
     {

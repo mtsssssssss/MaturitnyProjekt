@@ -5,6 +5,7 @@ public class AttemptResultListItemDto
     public Guid TestAttemptId { get; set; }
     public Guid TestId { get; set; }
     public string TestName { get; set; } = string.Empty;
+    public string SubjectName { get; set; } = string.Empty;
     public DateTime? TestStarted { get; set; }
     public DateTime? TestFinished { get; set; }
     public int TotalQuestions { get; set; }

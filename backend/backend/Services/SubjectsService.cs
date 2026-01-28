@@ -1,4 +1,4 @@
-﻿using backend.Data;
+using backend.Data;
 using backend.Dto.SubjectDto;
 using backend.Entities;
 using backend.Exceptions;
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
 
-public class SubjectsService
+public class SubjectsService : ISubjectsService
 {
     private readonly AppDbContext dbContext;
 

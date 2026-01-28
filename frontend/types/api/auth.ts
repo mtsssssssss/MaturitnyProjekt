@@ -20,5 +20,7 @@ export type LoginDto = {
 
 export type RegisterDto = {
   username: string;
+  firstName: string;
+  lastName: string;
   password: string;
 };

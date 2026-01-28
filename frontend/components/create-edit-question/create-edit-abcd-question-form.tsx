@@ -20,7 +20,6 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
   const queryClient = useQueryClient();
   const isEdit = !!id;
 
-  // 1. Query pre predmety
   const { data: subjects, isLoading: subjectsLoading } = useQuery({
     queryKey: ["subjects"],
     queryFn: getSubjects,
@@ -32,14 +31,12 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
     text: s.subjectName,
   }));
 
-  // 2. Fetch existujúcej otázky (Edit mode)
   const { data: questionData, isLoading: questionFetching } = useQuery({
     queryKey: ["questions", id],
     queryFn: () => getQuestion(id!),
     enabled: isEdit,
   });
 
-  // 3. Mutation pre API (Add alebo Update)
   const mutation = useMutation({
     mutationFn: (values: CreateEditQuestion) =>
       isEdit ? updateQuestion(id!, values) : createQuestion(values),
@@ -49,7 +46,6 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
     },
   });
 
-  // 4. Definícia formulára
   const form = useForm({
     defaultValues: {
       questionText: "",
@@ -89,13 +85,13 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
 
   return (
     <div className="w-full max-w-3xl mx-auto py-4 px-4">
-      <Card className="shadow-lg border-slate-200 bg-white">
-        <CardHeader className="bg-slate-50/50 border-b py-3 px-5">
+      <Card className="shadow-lg border-border bg-card">
+        <CardHeader className="bg-muted/30 border-b py-3 px-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <ListChecks className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-primary/10 rounded-lg">
+              <ListChecks className="h-5 w-5 text-primary" />
             </div>
-            <CardTitle className="text-lg font-bold text-slate-900">
+            <CardTitle className="text-lg font-bold">
               {isEdit ? "Upraviť ABCD otázku" : "Nová ABCD otázka"}
             </CardTitle>
           </div>
@@ -110,7 +106,6 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
             }}
           >
             <FieldGroup className="space-y-6">
-              {/* Sekcia: Základné info */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-1">
                   <form.Field
@@ -149,7 +144,6 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                 </div>
               </div>
 
-              {/* Sekcia: Odpovede */}
               <div className="space-y-4 pt-2">
                 <form.Field name="abcdAnswers" mode="array">
                   {(field) => {
@@ -157,7 +151,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                     return (
                       <div className="space-y-4">
                         <div className="flex justify-between items-center border-b pb-2">
-                          <h3 className="text-sm font-bold uppercase text-slate-500 tracking-tight">
+                          <h3 className="text-sm font-bold uppercase text-muted-foreground tracking-tight">
                             Možnosti odpovedí
                           </h3>
                           <Button
@@ -167,7 +161,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                             onClick={() =>
                               field.pushValue({ answer: "", isRight: false })
                             }
-                            className="h-8 border-dashed border-blue-300 text-blue-600 hover:bg-blue-50"
+                            className="h-8 border-dashed border-primary/40 text-primary hover:bg-primary/10"
                           >
                             <Plus className="h-4 w-4 mr-1" /> Pridať možnosť
                           </Button>
@@ -177,7 +171,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                           {answers.map((_, i) => (
                             <div
                               key={`answer-${i}`}
-                              className="flex items-start gap-3 p-3 bg-slate-50/50 border rounded-xl relative group transition-all focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-300"
+                              className="flex items-start gap-3 p-3 bg-muted/30 border rounded-xl relative group transition-all focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/40"
                             >
                               <div className="flex-1 min-w-0">
                                 <form.Field name={`abcdAnswers[${i}].answer`}>
@@ -194,13 +188,13 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                                 <form.Field name={`abcdAnswers[${i}].isRight`}>
                                   {(subField) => (
                                     <div className="flex flex-col items-center">
-                                      <label className="text-[10px] uppercase font-bold text-slate-400 mb-1">
+                                      <label className="text-[10px] uppercase font-bold text-muted-foreground mb-1">
                                         Ok
                                       </label>
                                       <input
                                         type="radio"
                                         name="isRightSelection"
-                                        className="w-5 h-5 accent-blue-600 cursor-pointer"
+                                        className="w-5 h-5 accent-primary cursor-pointer"
                                         checked={subField.state.value}
                                         onChange={() => {
                                           const currentAnswers =
@@ -221,7 +215,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                                   <button
                                     type="button"
                                     onClick={() => field.removeValue(i)}
-                                    className="mt-3 text-slate-300 hover:text-red-500 transition-colors"
+                                    className="mt-3 text-muted-foreground hover:text-destructive transition-colors"
                                   >
                                     <Trash2 className="h-4 w-4" />
                                   </button>
@@ -236,13 +230,12 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                 </form.Field>
               </div>
 
-              {/* Akcie */}
               <div className="flex items-center justify-between pt-6 border-t">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => router.push("/questions")}
-                  className="text-slate-500 h-10"
+                  className="text-muted-foreground h-10"
                 >
                   <Undo2 className="mr-2 h-4 w-4" /> Zrušiť
                 </Button>
@@ -250,7 +243,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                 <Button
                   type="submit"
                   disabled={mutation.isPending}
-                  className="bg-blue-600 hover:bg-blue-700 text-white h-10 px-8 shadow-md shadow-blue-100"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground h-10 px-8"
                 >
                   <Save className="mr-2 h-4 w-4" />
                   {isEdit ? "Uložiť zmeny" : "Vytvoriť otázku"}

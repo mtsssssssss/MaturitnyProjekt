@@ -13,10 +13,11 @@ namespace backend.Controllers;
 [Authorize]
 public class TestsController : ControllerBase
 {
-    private readonly TestsService testsService;
-    public TestsController(TestsService testsService)
-    {  
-        this.testsService = testsService; 
+    private readonly ITestsService testsService;
+
+    public TestsController(ITestsService testsService)
+    {
+        this.testsService = testsService;
     }
 
     [HttpPost("create-random-test")]

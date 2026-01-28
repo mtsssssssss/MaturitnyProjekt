@@ -1,4 +1,4 @@
-﻿using backend.Data;
+using backend.Data;
 using backend.Dto.QuestionDto;
 using backend.Dto.SubjectDto;
 using backend.Entities;
@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;
 
-public sealed class QuestionsService
+public sealed class QuestionsService : IQuestionsService
 {
     private readonly AppDbContext dbContext;
 
