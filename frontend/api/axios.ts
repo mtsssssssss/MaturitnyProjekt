@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { refreshToken } from "./auth";
 
-const BACKEND_ADDRESS = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7215/api";
+const BACKEND_ADDRESS = "https://localhost:7215/api";
 
 let isRefreshing = false;
 let failedQueue: Array<{
@@ -9,15 +9,18 @@ let failedQueue: Array<{
   reject: (error?: unknown) => void;
 }> = [];
 
-const processQueue = (error: AxiosError | null, token: string | null = null) => {
-  failedQueue.forEach(prom => {
+const processQueue = (
+  error: AxiosError | null,
+  token: string | null = null,
+) => {
+  failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
     } else {
       prom.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -32,14 +35,15 @@ const handleUnauthorized = () => {
   if (typeof window === "undefined") return;
   const path = window.location.pathname;
   if (path.includes("/login") || path.includes("/signup")) return;
-  // window.location.href = `/login?returnUrl=${encodeURIComponent(path)}`;
   window.location.href = "/login";
 };
 
 api.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
-    const req = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const req = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     if (error.config?.url?.includes("/auth/refresh-token")) {
       isRefreshing = false;
@@ -73,7 +77,7 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401 && req?._retry) handleUnauthorized();
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

@@ -18,6 +18,8 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { PageContent } from "@/lib/page-content";
+import { PageHeading } from "@/components/ui/page-heading";
 
 export default function QuestionsPage() {
   const queryClient = useQueryClient();
@@ -43,36 +45,35 @@ export default function QuestionsPage() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="py-6 md:py-10 space-y-6 w-[98%] md:w-[95%] mx-auto">
-      <div className="flex justify-between items-center border-b pb-6 px-2">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2 md:gap-3">
-            <HelpCircle className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            Správa otázok
-          </h1>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="default" className="md:h-12 md:px-6 gap-2 font-semibold shadow-md">
-              <Plus className="h-5 w-5" /> 
-              <span className="hidden sm:inline">Pridať otázku</span>
-              <ChevronDown className="h-4 w-4 opacity-50" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-2 shadow-xl border-2">
-            <DropdownMenuItem onClick={() => router.push("/questions/add/abcd")} className="flex items-center gap-3 p-3 cursor-pointer">
-              <div className="bg-blue-100 p-2 rounded-md"><ListChecks className="h-4 w-4 text-blue-600" /></div>
-              <div className="flex flex-col"><span className="font-bold text-sm">ABCD Otázka</span></div>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push("/questions/add/writing")} className="flex items-center gap-3 p-3 cursor-pointer mt-1">
-              <div className="bg-orange-100 p-2 rounded-md"><Type className="h-4 w-4 text-orange-600" /></div>
-              <div className="flex flex-col"><span className="font-bold text-sm">Writing Otázka</span></div>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+    <PageContent>
+      <PageHeading
+        icon={HelpCircle}
+        title="Správa otázok"
+        subtitle="Zoznam otázok podľa predmetov a typov."
+        actions={
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="default" className="md:h-12 md:px-6 gap-2 font-semibold shadow-md shrink-0">
+                <Plus className="h-5 w-5" />
+                <span className="hidden sm:inline">Pridať otázku</span>
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 p-2 shadow-xl border-2">
+              <DropdownMenuItem onClick={() => router.push("/questions/add/abcd")} className="flex items-center gap-3 p-3 cursor-pointer">
+                <div className="bg-primary/10 p-2 rounded-md"><ListChecks className="h-4 w-4 text-primary" /></div>
+                <div className="flex flex-col"><span className="font-bold text-sm">ABCD Otázka</span></div>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/questions/add/writing")} className="flex items-center gap-3 p-3 cursor-pointer mt-1">
+                <div className="bg-primary/10 p-2 rounded-md"><Type className="h-4 w-4 text-primary" /></div>
+                <div className="flex flex-col"><span className="font-bold text-sm">Písomná otázka</span></div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        }
+      />
 
-      <div className="border rounded-xl bg-white shadow-sm overflow-hidden">
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/80">
             <TableRow>
@@ -179,6 +180,6 @@ export default function QuestionsPage() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </PageContent>
   );
 }

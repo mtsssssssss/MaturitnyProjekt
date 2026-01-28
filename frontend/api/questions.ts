@@ -11,12 +11,17 @@ export const getQuestion = async (id: string): Promise<QuestionResponse> => {
   return data;
 };
 
-export const createQuestion = async (question: CreateEditQuestion): Promise<QuestionResponse> => {
+export const createQuestion = async (
+  question: CreateEditQuestion,
+): Promise<QuestionResponse> => {
   const { data } = await api.post("/Questions", question);
   return data;
 };
 
-export const updateQuestion = async (id: string, question: CreateEditQuestion): Promise<QuestionResponse> => {
+export const updateQuestion = async (
+  id: string,
+  question: CreateEditQuestion,
+): Promise<QuestionResponse> => {
   const { data } = await api.put(`/Questions/${id}`, question);
   return data;
 };

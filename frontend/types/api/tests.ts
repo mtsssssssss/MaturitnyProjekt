@@ -53,6 +53,7 @@ export type AssignedTestListItem = {
   testId: string;
   testName: string;
   testDescription: string;
+  subjectName: string;
   timeLimitMinutes: number;
   assignedAt: string;
 };

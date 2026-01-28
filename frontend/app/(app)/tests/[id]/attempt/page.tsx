@@ -57,22 +57,25 @@ export default function TestAttemptPage() {
     }
   }, [finishTestMutation]);
 
+  const triggerAutoFinish = useCallback(() => {
+    if (hasTriggeredFinish.current || !testAttemptId) return;
+    hasTriggeredFinish.current = true;
+    finishTestMutation.mutate();
+  }, [finishTestMutation, testAttemptId]);
+
   useEffect(() => {
-    if (!testData || isFinished) return;
+    if (!testData || isFinished || timeLeft <= 0) return;
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          if (!hasTriggeredFinish.current) {
-            hasTriggeredFinish.current = true;
-            handleFinishTest();
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
+      setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
     return () => clearInterval(timer);
-  }, [testData, isFinished, handleFinishTest]);
+  }, [testData, isFinished, timeLeft]);
+
+  useEffect(() => {
+    if (!testData || isFinished || timeLeft !== 0 || !testAttemptId) return;
+    if (hasTriggeredFinish.current) return;
+    triggerAutoFinish();
+  }, [testData, isFinished, timeLeft, testAttemptId, triggerAutoFinish]);
 
   useEffect(() => {
     if (!testData || timeLeft <= 0) return;

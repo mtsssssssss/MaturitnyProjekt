@@ -12,15 +12,14 @@ export const getUsers = async (): Promise<UserListItem[]> => {
 
 export const updateUserRole = async (
   id: string,
-  dto: UpdateUserRoleDto
+  dto: UpdateUserRoleDto,
 ): Promise<void> => {
   await api.put(`/User/${id}/role`, dto);
 };
 
 export const updateUserPassword = async (
   id: string,
-  dto: UpdateUserPasswordDto
+  dto: UpdateUserPasswordDto,
 ): Promise<void> => {
   await api.put(`/User/${id}/password`, dto);
 };
-

@@ -22,8 +22,11 @@ import {
 } from "@/components/ui/select";
 import { Shield, Users, KeyRound } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { PageContent } from "@/lib/page-content";
+import { PageHeading } from "@/components/ui/page-heading";
 
 const roles = ["User", "Teacher", "Admin"] as const;
+const ROLE_TO_NUM: Record<string, number> = { User: 1, Teacher: 2, Admin: 3 };
 
 export default function UsersPage() {
   const { userRole, isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -40,7 +43,7 @@ export default function UsersPage() {
 
   const updateRoleMutation = useMutation({
     mutationFn: (payload: { id: string; role: (typeof roles)[number] }) =>
-      updateUserRole(payload.id, { role: payload.role }),
+      updateUserRole(payload.id, { role: ROLE_TO_NUM[payload.role] }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },
@@ -79,20 +82,14 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="py-6 md:py-10 space-y-6 w-[98%] md:w-[95%] mx-auto">
-      <div className="flex justify-between items-center border-b pb-6 px-2">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center gap-2 md:gap-3">
-            <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-            Správa používateľov
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Prehľad všetkých používateľov s možnosťou meniť role a heslá.
-          </p>
-        </div>
-      </div>
+    <PageContent>
+      <PageHeading
+        icon={Users}
+        title="Správa používateľov"
+        subtitle="Prehľad všetkých používateľov s možnosťou meniť role a heslá."
+      />
 
-      <div className="border rounded-xl bg-white shadow-sm overflow-hidden">
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/80">
             <TableRow>
@@ -152,7 +149,7 @@ export default function UsersPage() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </PageContent>
   );
 }
 

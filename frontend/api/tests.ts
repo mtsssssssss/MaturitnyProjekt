@@ -18,21 +18,21 @@ export const createRandomTest = async (data: TestCreate) => {
 };
 
 export const createManualTest = async (
-  data: ManualTestCreate
+  data: ManualTestCreate,
 ): Promise<{ id: string }> => {
   const response = await api.post("/Tests/create-manual-test", data);
   return response.data;
 };
 
 export const startTest = async (
-  data: StartTestRequest
+  data: StartTestRequest,
 ): Promise<StartTestResponse> => {
   const response = await api.post("/Tests/test-start", data);
   return response.data;
 };
 
 export const submitAnswer = async (
-  data: SubmitAnswerRequest
+  data: SubmitAnswerRequest,
 ): Promise<boolean> => {
   const payload: any = {
     testAttemptId: data.testAttemptId,
@@ -43,7 +43,11 @@ export const submitAnswer = async (
     payload.selectedAbcdAnswerId = data.selectedAbcdAnswerId;
   }
 
-  if (data.writtenAnswer !== undefined && data.writtenAnswer !== null && data.writtenAnswer.trim() !== "") {
+  if (
+    data.writtenAnswer !== undefined &&
+    data.writtenAnswer !== null &&
+    data.writtenAnswer.trim() !== ""
+  ) {
     payload.writtenAnswer = data.writtenAnswer;
   }
 
@@ -52,7 +56,7 @@ export const submitAnswer = async (
 };
 
 export const finishTest = async (
-  data: FinishTestRequest
+  data: FinishTestRequest,
 ): Promise<FinishTestResponse> => {
   const response = await api.post("/Tests/finish-test", data);
   return response.data;
@@ -64,17 +68,15 @@ export const getAssignedTests = async (): Promise<AssignedTestListItem[]> => {
 };
 
 export const getMyAttempts = async (): Promise<AttemptResultListItem[]> => {
-  const { data } = await api.get<AttemptResultListItem[]>(
-    "/Tests/my-attempts"
-  );
+  const { data } = await api.get<AttemptResultListItem[]>("/Tests/my-attempts");
   return data;
 };
 
-export const getStudentAttempts =
-  async (): Promise<StudentAttemptResultListItem[]> => {
-    const { data } = await api.get<StudentAttemptResultListItem[]>(
-      "/Tests/student-attempts"
-    );
-    return data;
-  };
-
+export const getStudentAttempts = async (): Promise<
+  StudentAttemptResultListItem[]
+> => {
+  const { data } = await api.get<StudentAttemptResultListItem[]>(
+    "/Tests/student-attempts",
+  );
+  return data;
+};

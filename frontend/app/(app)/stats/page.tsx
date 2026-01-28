@@ -6,7 +6,11 @@ import { AttemptResultListItem } from "@/types/api/tests";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AttemptsChart } from "@/components/stats/AttemptsChart";
 import { AttemptsTable } from "@/components/stats/AttemptsTable";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageContent } from "@/lib/page-content";
+import { PageHeading, PageSectionHeading } from "@/components/ui/page-heading";
+import { aggregateBySubject } from "@/lib/stats";
+import { Card } from "@/components/ui/card";
+import { BarChart2, ListOrdered } from "lucide-react";
 
 export default function StatsPage() {
   const { data, isLoading } = useQuery<AttemptResultListItem[]>({
@@ -14,35 +18,41 @@ export default function StatsPage() {
     queryFn: getMyAttempts,
   });
 
+  const chartData = aggregateBySubject(data ?? []);
+
   if (isLoading) return <LoadingSpinner />;
 
-  const chartData = (data ?? []).slice(0, 10).map((a) => ({
-    name: a.testName.length > 18 ? a.testName.slice(0, 18) + "…" : a.testName,
-    uspesnost: Number(a.totalScorePercentage.toFixed(1)),
-    spravne: a.correctAnswers,
-    celkom: a.totalQuestions,
-  }));
-
   return (
-    <div className="py-6 md:py-10 space-y-6 w-[98%] md:w-[95%] max-w-6xl mx-auto px-2 sm:px-4">
-      <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-        Moje štatistiky testov
-      </h1>
+    <PageContent>
+      <PageHeading
+        icon={BarChart2}
+        title="Moje štatistiky testov"
+        subtitle="Prehľad dokončených testov a úspešnosti podľa predmetov."
+      />
 
       {chartData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Úspešnosť podľa testov</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <Card className="overflow-hidden">
+          <PageSectionHeading
+            icon={BarChart2}
+            title="Úspešnosť podľa predmetov"
+            subtitle="Priemerná percentuálna úspešnosť v jednotlivých predmetoch."
+          />
+          <div className="p-4 sm:p-6">
             <AttemptsChart data={chartData} />
-          </CardContent>
+          </div>
         </Card>
       )}
 
-      <Card>
-        <AttemptsTable data={data ?? []} />
+      <Card className="overflow-hidden">
+        <PageSectionHeading
+          icon={ListOrdered}
+          title="Prehľad dokončených testov"
+          subtitle="Jednotlivé pokusy s výsledkami a percentuálnou úspešnosťou."
+        />
+        <div className="pt-4">
+          <AttemptsTable data={data ?? []} />
+        </div>
       </Card>
-    </div>
+    </PageContent>
   );
 }

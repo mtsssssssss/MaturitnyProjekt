@@ -123,6 +123,7 @@ public class TestsService : ITestsService
     public async Task<List<AssignedTestListItemDto>> GetAssignedTestsAsync(Guid userId)
     {
         var assigned = await dbContext.TestAssignments
+            .Include(a => a.Test).ThenInclude(t => t.Subject)
             .Where(a => a.UserId == userId)
             .OrderByDescending(a => a.AssignedAt)
             .Select(a => new AssignedTestListItemDto
@@ -130,6 +131,7 @@ public class TestsService : ITestsService
                 TestId = a.TestId,
                 TestName = a.Test.TestName,
                 TestDescription = a.Test.TestDescription,
+                SubjectName = a.Test.Subject.SubjectName,
                 TimeLimitMinutes = a.Test.TimeLimitMinutes,
                 AssignedAt = a.AssignedAt
             })

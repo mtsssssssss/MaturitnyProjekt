@@ -15,6 +15,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, LayoutGrid } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { PageContent } from "@/lib/page-content";
+import { PageHeading } from "@/components/ui/page-heading";
 
 export default function Page() {
   const queryClient = useQueryClient();
@@ -35,28 +37,21 @@ export default function Page() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="py-6 md:py-10 space-y-6 w-[95%] mx-auto">
-      <div className="flex justify-between items-center border-b pb-6 px-2">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
-            <LayoutGrid className="h-8 w-8 text-primary" />
-            Správa predmetov
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Kompletný zoznam dostupných maturitných predmetov.
-          </p>
-        </div>
-        <Button asChild size="lg" className="h-12 px-6 cursor-pointer">
-          <Link
-            href="/subjects/add"
-            className="flex items-center gap-2 text-base cursor-pointer"
-          >
-            <Plus className="h-5 w-5" /> Pridať nový predmet
-          </Link>
-        </Button>
-      </div>
+    <PageContent>
+      <PageHeading
+        icon={LayoutGrid}
+        title="Správa predmetov"
+        subtitle="Kompletný zoznam dostupných maturitných predmetov."
+        actions={
+          <Button asChild size="lg" className="h-12 px-6 cursor-pointer shrink-0">
+            <Link href="/subjects/add" className="flex items-center gap-2 text-base cursor-pointer">
+              <Plus className="h-5 w-5" /> Pridať nový predmet
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="hidden md:block border rounded-xl bg-white shadow-sm overflow-hidden">
+      <div className="hidden md:block border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader className="bg-slate-50/80">
             <TableRow>
@@ -121,7 +116,7 @@ export default function Page() {
         {data?.map((subject) => (
           <div
             key={subject.id}
-            className="border rounded-xl p-4 bg-white shadow-sm"
+            className="border rounded-xl p-4 bg-card shadow-sm"
           >
             <div className="flex justify-between items-start mb-3">
               <span className="font-mono font-bold text-primary">
@@ -150,6 +145,6 @@ export default function Page() {
           </div>
         ))}
       </div>
-    </div>
+    </PageContent>
   );
 }

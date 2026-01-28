@@ -40,7 +40,7 @@ export function useAuth() {
 
   return {
     user: meQuery.data,
-    userRole: meQuery.data?.role ,
+    userRole: meQuery.data?.role,
     isAuthenticated: !!meQuery.data,
     isLoading: meQuery.isLoading,
 

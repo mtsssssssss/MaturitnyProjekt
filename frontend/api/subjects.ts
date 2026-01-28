@@ -11,12 +11,17 @@ export const getSubject = async (id: string): Promise<Subject> => {
   return data;
 };
 
-export const createSubject = async (subject: CreateEditSubject): Promise<Subject> => {
+export const createSubject = async (
+  subject: CreateEditSubject,
+): Promise<Subject> => {
   const { data } = await api.post("/Subjects", subject);
   return data;
 };
 
-export const updateSubject = async (subject: {id: string, subject: CreateEditSubject}): Promise<Subject> => {
+export const updateSubject = async (subject: {
+  id: string;
+  subject: CreateEditSubject;
+}): Promise<Subject> => {
   const { data } = await api.put(`/Subjects/${subject.id}`, subject.subject);
   return data;
 };

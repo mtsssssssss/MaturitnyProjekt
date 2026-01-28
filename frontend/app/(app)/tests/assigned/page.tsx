@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { PageContent } from "@/lib/page-content";
+import { PageHeading } from "@/components/ui/page-heading";
+import { Inbox } from "lucide-react";
 
 export default function AssignedTestsPage() {
   const router = useRouter();
@@ -26,16 +29,19 @@ export default function AssignedTestsPage() {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="py-6 md:py-10 space-y-6 w-[98%] md:w-[95%] mx-auto">
-      <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-        Pridelené testy
-      </h1>
+    <PageContent>
+      <PageHeading
+        icon={Inbox}
+        title="Pridelené testy"
+        subtitle="Testy, ktoré vám boli pridelené na vypracovanie."
+      />
 
-      <div className="border rounded-xl bg-white shadow-sm overflow-hidden">
+      <div className="border rounded-xl bg-card shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Názov testu</TableHead>
+              <TableHead>Predmet</TableHead>
               <TableHead>Popis</TableHead>
               <TableHead>Čas (min)</TableHead>
               <TableHead>Pridelené</TableHead>
@@ -46,6 +52,7 @@ export default function AssignedTestsPage() {
             {data?.map((t) => (
               <TableRow key={t.testId}>
                 <TableCell>{t.testName}</TableCell>
+                <TableCell>{t.subjectName}</TableCell>
                 <TableCell>{t.testDescription}</TableCell>
                 <TableCell>{t.timeLimitMinutes}</TableCell>
                 <TableCell>
@@ -65,7 +72,7 @@ export default function AssignedTestsPage() {
           </TableBody>
         </Table>
       </div>
-    </div>
+    </PageContent>
   );
 }
 

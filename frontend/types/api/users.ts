@@ -8,7 +8,7 @@ export type UserListItem = {
 };
 
 export type UpdateUserRoleDto = {
-  role: "User" | "Teacher" | "Admin";
+  role: number;
 };
 
 export type UpdateUserPasswordDto = {
