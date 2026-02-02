@@ -5,10 +5,10 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { submitAnswer, finishTest } from "@/api/tests";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { AttemptResults } from "@/components/test-attempt/AttemptResults";
-import { AttemptHeader } from "@/components/test-attempt/AttemptHeader";
-import { QuestionNavigator } from "@/components/test-attempt/QuestionNavigator";
-import { QuestionCard } from "@/components/test-attempt/QuestionCard";
+import { AttemptResults } from "@/components/test-attempt/attempt-results";
+import { AttemptHeader } from "@/components/test-attempt/attempt-header";
+import { QuestionNavigator } from "@/components/test-attempt/question-navigator";
+import { QuestionCard } from "@/components/test-attempt/question-card";
 import type { QuestionAnswer } from "@/components/test-attempt/types";
 import type { StartTestResponse, FinishTestResponse } from "@/types/api/tests";
 
@@ -32,7 +32,7 @@ export default function TestAttemptPage() {
       const parsed = JSON.parse(storedData);
       setTestData(parsed.testData);
       setAnswers(parsed.answers || {});
-      setTimeLeft(parsed.timeLeft ?? parsed.testData?.timeLimitMinutes * 60 ?? 0);
+      setTimeLeft(parsed.timeLeft ?? parsed.testData?.timeLimitMinutes * 60);
       setCurrentQuestionIndex(parsed.currentQuestionIndex ?? 0);
     } else {
       router.push(`/tests/${params.id}`);

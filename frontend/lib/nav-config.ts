@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { NavItem } from "@/types/nav-type";
 import {
   LayoutDashboard,
   Edit3,
@@ -10,8 +10,6 @@ import {
   FilePlus,
   Users,
 } from "lucide-react";
-
-export type NavItem = { title: string; url: string; icon: LucideIcon };
 
 export const navDashboard: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },

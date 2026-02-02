@@ -5,3 +5,5 @@ https://nextjs.org/docs
 https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
 https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
 https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
+
+https://www.youtube.com/watch?v=SI38jyEiso4

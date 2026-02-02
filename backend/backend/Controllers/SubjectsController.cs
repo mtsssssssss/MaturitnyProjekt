@@ -30,21 +30,21 @@ public sealed class SubjectsController : ControllerBase
         return Ok(subjects);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<SubjectResponseDto>> GetSubjectById(Guid id)
     {
         var subject = await subjectsService.GetSubjectByIdAsync(id);
         return Ok(subject);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public async Task<ActionResult<SubjectResponseDto>> UpdateSubject(Guid id, [FromBody] CreateEditSubjectDto dto)
     {
         var updated = await subjectsService.UpdateSubjectAsync(id, dto);
         return Ok(updated);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteSubject(Guid id)
     {
         await subjectsService.DeleteSubjectAsync(id);

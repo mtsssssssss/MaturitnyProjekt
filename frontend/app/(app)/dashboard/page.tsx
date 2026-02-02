@@ -7,7 +7,7 @@ import {
   navTeacher,
   navAdmin,
 } from "@/lib/nav-config";
-import { DashboardCard } from "@/components/dashboard/DashboardCard";
+import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PageContent } from "@/lib/page-content";
 import { PageHeading } from "@/components/ui/page-heading";

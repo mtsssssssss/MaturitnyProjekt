@@ -37,21 +37,21 @@ public sealed class QuestionsController : ControllerBase
         return Ok(questions);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<QuestionResponseDto>> GetQuestionById(Guid id)
     {
         var question = await questionsService.GetQuestionByIdAsync(id);
         return Ok(question);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:guid}")]
     public async Task<ActionResult<QuestionResponseDto>> EditQuestion(Guid id, [FromBody] CreateEditQuestionDto dto)
     {
         var updated = await questionsService.EditQuestionAsync(id, dto);
         return Ok(updated);
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:guid}")]
     public async Task<ActionResult> DeleteQuestion(Guid id)
     {
         await questionsService.DeleteQuestionAsync(id);

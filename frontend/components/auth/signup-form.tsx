@@ -76,11 +76,6 @@ export function SignupForm({
       {...props}
     >
       <CardHeader className="space-y-1 text-center">
-        <div className="flex justify-center mb-2">
-          <div className="p-3 bg-primary/10 rounded-full">
-            <UserPlus className="w-6 h-6 text-primary" />
-          </div>
-        </div>
         <CardTitle className="text-2xl font-bold tracking-tight">
           Vytvoriť účet
         </CardTitle>
@@ -182,7 +177,7 @@ export function SignupForm({
                   href="/login"
                   className="text-primary font-semibold hover:underline underline-offset-4"
                 >
-                  Prihláste sa
+                  Prihláste sa!
                 </Link>
               </div>
             </div>

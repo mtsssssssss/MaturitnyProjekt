@@ -63,7 +63,7 @@ export default function CreateTestPage() {
   const mutation = useMutation({
     mutationFn: (data: ManualTestCreate) => createManualTest(data),
     onSuccess: ({ id }) => {
-      router.push(`/tests/${id}`);
+      alert("Test pridelený!");
     },
   });
 
