@@ -1,5 +1,5 @@
 using backend.Dto.UserDto;
-using backend.Entities;
+using backend.Enums;
 
 namespace backend.Services;
 

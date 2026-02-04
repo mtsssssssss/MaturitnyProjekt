@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -8,9 +7,7 @@ namespace backend.Entities;
 [Table("test", Schema = "tests")]
 public sealed class Test
 {
-    [Key]
     public Guid Id { get; set; }
-
     public string TestName { get; set; } = string.Empty;
     public string TestDescription { get; set; } = string.Empty;
     public int TimeLimitMinutes { get; set; }

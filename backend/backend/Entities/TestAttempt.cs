@@ -16,18 +16,13 @@ public enum TestStatus
 public class TestAttempt
 {
     public Guid Id { get; set; }
-
     public string AttemptName { get; set; } = string.Empty;
-
-
     public DateTime? TestStarted { get; set; }
     public DateTime? TestFinished { get; set; }
     public TestStatus TestStatus { get; set; }
-
     public int TotalQuestions { get; set; }
     public int CorrectAnswers { get; set; }
     public decimal TotalScorePercentage { get; set; }
-
 
     public Guid UserId { get; set; }
     public User User { get; set; } = null!;

@@ -26,7 +26,7 @@ builder.Services.AddCors(opt =>
     })
 );
 
-// pridanie Postgres databazy do DI
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjekt")));
 
@@ -74,7 +74,6 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 app.MapDefaultEndpoints();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

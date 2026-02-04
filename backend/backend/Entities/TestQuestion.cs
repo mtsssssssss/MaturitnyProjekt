@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using backend.Data;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace backend.Entities;

@@ -5,6 +5,7 @@ using System.Text;
 using backend.Data;
 using backend.Dto.AuthDto;
 using backend.Entities;
+using backend.Enums;
 using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

@@ -1,21 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using backend.Enums;
 
 namespace backend.Entities;
-
-public enum UserRole
-{
-    User = 1,
-    Teacher = 2,
-    Admin = 3,
-}
 
 
 [Table("user", Schema = "auth")]
 public sealed class User
 {
     public Guid Id { get; set; }
-
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
 
