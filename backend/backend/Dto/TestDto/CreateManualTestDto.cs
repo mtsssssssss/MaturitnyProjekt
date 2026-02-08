@@ -10,7 +10,6 @@ public sealed class CreateManualTestDto
 
     public List<Guid> QuestionIds { get; set; } = [];
 
-    // Používatelia, ktorým sa test pridelí
     public List<Guid> AssignedUserIds { get; set; } = [];
 }
 

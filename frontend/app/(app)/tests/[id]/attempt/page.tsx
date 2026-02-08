@@ -9,7 +9,7 @@ import { AttemptResults } from "@/components/test-attempt/attempt-results";
 import { AttemptHeader } from "@/components/test-attempt/attempt-header";
 import { QuestionNavigator } from "@/components/test-attempt/question-navigator";
 import { QuestionCard } from "@/components/test-attempt/question-card";
-import type { QuestionAnswer } from "@/components/test-attempt/types";
+import type { QuestionAnswer } from "@/types/test";
 import type { StartTestResponse, FinishTestResponse } from "@/types/api/tests";
 
 export default function TestAttemptPage() {

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using backend.Data;
 using backend.Entities;
 using backend.Enums;
 

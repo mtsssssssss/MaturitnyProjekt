@@ -1,8 +1,8 @@
 import api from "./axios";
 import {
   UserListItem,
-  UpdateUserRoleDto,
-  UpdateUserPasswordDto,
+  UpdateUserRole,
+  UpdateUserPassword,
 } from "@/types/api/users";
 
 export const getUsers = async (): Promise<UserListItem[]> => {
@@ -12,14 +12,14 @@ export const getUsers = async (): Promise<UserListItem[]> => {
 
 export const updateUserRole = async (
   id: string,
-  dto: UpdateUserRoleDto,
+  dto: UpdateUserRole,
 ): Promise<void> => {
   await api.put(`/User/${id}/role`, dto);
 };
 
 export const updateUserPassword = async (
   id: string,
-  dto: UpdateUserPasswordDto,
+  dto: UpdateUserPassword,
 ): Promise<void> => {
   await api.put(`/User/${id}/password`, dto);
 };

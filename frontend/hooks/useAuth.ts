@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as authApi from "@/api/auth";
-import { LoginDto, RegisterDto, User } from "@/types/api/auth";
+import { Login, Register, User } from "@/types/api/auth";
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -18,14 +18,14 @@ export function useAuth() {
   });
 
   const loginMutation = useMutation({
-    mutationFn: (data: LoginDto) => authApi.login(data),
+    mutationFn: (data: Login) => authApi.login(data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["me"] });
     },
   });
 
   const registerMutation = useMutation({
-    mutationFn: (data: RegisterDto) => authApi.register(data),
+    mutationFn: (data: Register) => authApi.register(data),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["me"] });
     },

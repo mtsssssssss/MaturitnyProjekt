@@ -13,11 +13,6 @@ public class CreateTestDto
 
     public ICollection<CreateTestQuestionDto> TestQuestions { get; set; } = new List<CreateTestQuestionDto>();
 
-    /*
-    public Guid UserId { get; set; }
-    public User User { get; set; } = null!;
-    */
-
     public Guid SubjectId { get; set; }
     public Subject Subject { get; set; } = null!;
 

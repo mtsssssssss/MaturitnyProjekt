@@ -1,11 +1,11 @@
 import api from "./axios";
-import { LoginDto, RegisterDto, User, FullUser } from "@/types/api/auth";
+import { Login, Register, User, FullUser } from "@/types/api/auth";
 
-export const login = async (data: LoginDto): Promise<void> => {
+export const login = async (data: Login): Promise<void> => {
   await api.post("/auth/login", data);
 };
 
-export const register = async (data: RegisterDto): Promise<void> => {
+export const register = async (data: Register): Promise<void> => {
   await api.post("/auth/register", data);
 };
 

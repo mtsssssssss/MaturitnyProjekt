@@ -1,8 +1,7 @@
 using backend.Data;
 using backend.Dto.UserDto;
-using backend.Entities;
+using backend.Enums;
 using backend.Exceptions;
-using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services;

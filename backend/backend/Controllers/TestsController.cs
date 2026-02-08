@@ -21,7 +21,6 @@ public class TestsController : ControllerBase
     }
 
     [HttpPost("create-random-test")]
-    [Authorize()]
     public async Task<ActionResult<CreateRandomTestResponseDto>> CreateRandomTest([FromBody] CreateRandomTestDto dto)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -31,7 +30,7 @@ public class TestsController : ControllerBase
         return Ok(result);           
 
     }
-
+    /*
     [HttpPost("create-test")]
     [Authorize(Roles = "Teacher,Admin")]
     public async Task<ActionResult<CreateRandomTestResponseDto>> CreateTest([FromBody] CreateRandomTestDto dto)
@@ -43,6 +42,7 @@ public class TestsController : ControllerBase
         return Ok(result);
 
     }
+    */
 
     [HttpPost("create-manual-test")]
     [Authorize(Roles = "Teacher,Admin")]

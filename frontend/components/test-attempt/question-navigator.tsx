@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { AttemptQuestion } from "./types";
-import type { QuestionAnswer } from "./types";
+import type { AttemptQuestion } from "../../types/test";
+import type { QuestionAnswer } from "../../types/test";
 
 type QuestionNavigatorProps = {
   questions: AttemptQuestion[];

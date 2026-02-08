@@ -1,4 +1,4 @@
-import { NavItem } from "@/types/nav-type";
+import { type  NavItem } from "@/types/nav-type";
 import {
   LayoutDashboard,
   Edit3,
@@ -31,3 +31,6 @@ export const navTeacher: NavItem[] = [
 export const navAdmin: NavItem[] = [
   { title: "Správa používateľov", url: "/users", icon: Users },
 ];
+
+export { NavItem };
+

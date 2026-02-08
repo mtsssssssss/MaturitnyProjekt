@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[url('/background.jpg')] bg-cover bg-center" />
+
       <div className="absolute inset-0 bg-background/80 dark:bg-background/90" />
       <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-background/70 to-background/80" />
 

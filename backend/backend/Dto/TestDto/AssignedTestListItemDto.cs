@@ -1,5 +1,3 @@
-using backend.Entities;
-
 namespace backend.Dto.TestDto;
 
 public sealed class AssignedTestListItemDto

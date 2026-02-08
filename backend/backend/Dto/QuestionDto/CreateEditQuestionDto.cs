@@ -1,5 +1,4 @@
-using System.ComponentModel.DataAnnotations;
-using backend.Data;
+using backend.Enums;
 
 namespace backend.Dto.QuestionDto;
 

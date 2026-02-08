@@ -15,7 +15,7 @@ import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
 import { TanStackFormInput } from "../custom-form-inputs/form-input";
-import { RegisterDto } from "@/types/api/auth";
+import { Register } from "@/types/api/auth";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { Loader2, UserPlus } from "lucide-react";
 import { useState } from "react";
@@ -55,7 +55,7 @@ export function SignupForm({
     },
     onSubmit: async ({ value }) => {
       setAuthError(null);
-      const dto: RegisterDto = {
+      const dto: Register = {
         username: value.username,
         firstName: value.firstName,
         lastName: value.lastName,

@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ListChecks, Type } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AttemptQuestion, QuestionAnswer } from "./types";
+import type { AttemptQuestion, QuestionAnswer } from "../../types/test";
 
 type QuestionCardProps = {
   question: AttemptQuestion;

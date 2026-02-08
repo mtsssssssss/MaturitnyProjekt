@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/useAuth";
-import { LoginDto } from "@/types/api/auth";
+import { Login } from "@/types/api/auth";
 import { TanStackFormInput } from "@/components/custom-form-inputs/form-input";
 import { getApiErrorMessage } from "@/lib/api-error";
 import { Loader2 } from "lucide-react";
@@ -42,7 +42,7 @@ export default function LoginForm({
         password: z.string().min(6, "Heslo musí mať minimálne 6 znakov"),
       }),
     },
-    onSubmit: async ({ value }: { value: LoginDto }) => {
+    onSubmit: async ({ value }: { value: Login }) => {
       setAuthError(null);
       try {
         await login(value);

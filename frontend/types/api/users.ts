@@ -7,11 +7,11 @@ export type UserListItem = {
   createdAt: string;
 };
 
-export type UpdateUserRoleDto = {
+export type UpdateUserRole = {
   role: number;
 };
 
-export type UpdateUserPasswordDto = {
+export type UpdateUserPassword = {
   newPassword: string;
 };
 

@@ -42,9 +42,9 @@ builder.Services.AddAuthentication("Bearer")
 {
     options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = ctx =>
+        OnMessageReceived = cntx =>
         {
-            ctx.Token = ctx.Request.Cookies["access_token"];
+            cntx.Token = cntx.Request.Cookies["access_token"];
             return Task.CompletedTask;
         }
     };

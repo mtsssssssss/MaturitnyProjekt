@@ -1,15 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using backend.Data;
+using backend.Enums;
 
 namespace backend.Entities;
-
-
-public enum TestStatus
-{
-    Created = 1,
-    InProgress = 2,
-    Finished = 3,
-}
 
 
 [Table("test_attempt", Schema = "tests")]

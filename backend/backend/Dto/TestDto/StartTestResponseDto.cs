@@ -1,4 +1,4 @@
-using backend.Data;
+using backend.Enums;
 
 namespace backend.Dto.TestDto;
 

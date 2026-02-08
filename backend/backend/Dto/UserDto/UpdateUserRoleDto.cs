@@ -1,4 +1,4 @@
-using backend.Entities;
+using backend.Enums;
 
 namespace backend.Dto.UserDto;
 

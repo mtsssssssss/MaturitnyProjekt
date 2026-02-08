@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Net;
+﻿using System.Net;
 using backend.Dto.Error;
 using backend.Exceptions;
 
@@ -24,18 +23,6 @@ public class ExceptionMiddleware
         {
             await HandleExceptionAsync(context, ex.StatusCode, ex.Message);
         }
-        catch (FluentValidation.ValidationException ex)
-        {
-            var errors = ex.Errors
-                .GroupBy(e => e.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
-
-            await HandleExceptionAsync(context, 400, "Validation failed", errors);
-        }
-
         catch (Exception)
         {
             await HandleExceptionAsync(context, (int)HttpStatusCode.InternalServerError, "Internal server error");
@@ -51,7 +38,6 @@ public class ExceptionMiddleware
         {
             Message = message,
             StatusCode = statusCode,
-            TraceId = context.TraceIdentifier,
             Errors = errors
         };
 

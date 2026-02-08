@@ -1,6 +1,7 @@
 using backend.Data;
 using backend.Dto.TestDto;
 using backend.Entities;
+using backend.Enums;
 using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -104,7 +105,6 @@ public class TestsService : ITestsService
 
         dbContext.Tests.Add(test);
 
-        // priradenia
         var assignments = usersToAssign.Select(uid => new TestAssignment
         {
             Id = Guid.NewGuid(),
@@ -202,7 +202,6 @@ public class TestsService : ITestsService
         if (test == null)
             throw new NotFoundException("Test neexistuje.");
 
-        // Zistíme posledný pokus používateľa pre daný test
         var lastAttempt = await dbContext.TestAttempts
             .Where(ta => ta.TestId == testId && ta.UserId == userId)
             .OrderByDescending(ta => ta.TestStarted)
@@ -210,7 +209,6 @@ public class TestsService : ITestsService
 
         TestAttempt testAttempt;
 
-        // Ak žiadny pokus nie je alebo posledný je ukončený, vytvoríme nový pokus
         if (lastAttempt is null || lastAttempt.TestStatus == TestStatus.Finished)
         {
             testAttempt = new TestAttempt
@@ -227,12 +225,12 @@ public class TestsService : ITestsService
             dbContext.TestAttempts.Add(testAttempt);
             await dbContext.SaveChangesAsync();
         }
-        // Ak je pokus rozrobený, test len "otvoríme" znova – nevytvárame nový
+
         else if (lastAttempt.TestStatus == TestStatus.InProgress)
         {
             testAttempt = lastAttempt;
         }
-        // Ak by bol iný stav (napr. Created), nastavíme ho ako prebiehajúci
+
         else
         {
             lastAttempt.TestStatus = TestStatus.InProgress;

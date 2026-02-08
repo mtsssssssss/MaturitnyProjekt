@@ -58,7 +58,7 @@ public class AppDbContext : DbContext
             .HasIndex(i => i.SubjectAbbrev)
             .IsUnique(true);
 
-        // Question TPH konfuiguracia
+        // Question TPH konfuiguracia - https://learn.microsoft.com/en-us/ef/core/modeling/inheritance
         modelBuilder.Entity<Question>()
             .HasDiscriminator<QuestionType>("QuestionType")
             .HasValue<AbcdQuestion>(QuestionType.Abcd)

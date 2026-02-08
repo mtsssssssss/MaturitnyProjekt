@@ -13,12 +13,12 @@ export type FullUser = {
   role: string;
 };
 
-export type LoginDto = {
+export type Login = {
   username: string;
   password: string;
 };
 
-export type RegisterDto = {
+export type Register = {
   username: string;
   firstName: string;
   lastName: string;

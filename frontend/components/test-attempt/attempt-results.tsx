@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import type { FinishTestResponse } from "./types";
+import type { FinishTestResponse } from "../../types/test";
 
 type AttemptResultsProps = {
   testName: string;

@@ -2,6 +2,7 @@ using backend.Data;
 using backend.Dto.QuestionDto;
 using backend.Dto.SubjectDto;
 using backend.Entities;
+using backend.Enums;
 using backend.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,6 @@ public sealed class QuestionsService : IQuestionsService
         if (dtos == null || !dtos.Any())
             throw new ValidationException("Zoznam otázok nesmie byť prázdny.");
 
-        // Optimalizácia: Vytiahneme si ID všetkých predmetov, ktoré sú v DTOs
         var subjectIds = dtos.Select(d => d.SubjectId).Distinct().ToList();
         var subjects = await dbContext.Subjects
             .Where(s => subjectIds.Contains(s.Id))
@@ -31,7 +31,6 @@ public sealed class QuestionsService : IQuestionsService
 
         foreach (var dto in dtos)
         {
-            // Kontrola, či predmet existuje v našom vytiahnutom slovníku
             if (!subjects.TryGetValue(dto.SubjectId, out var subject))
                 throw new NotFoundException($"Predmet s ID {dto.SubjectId} neexistuje.");
 
@@ -80,11 +79,9 @@ public sealed class QuestionsService : IQuestionsService
             questionsToAdd.Add(question);
         }
 
-        // Hromadné pridanie do kontextu
         await dbContext.Questions.AddRangeAsync(questionsToAdd);
         await dbContext.SaveChangesAsync();
 
-        // Mapovanie výsledkov späť na DTOs
         return questionsToAdd.Select(q => MapToResponseDto(q)).ToList();
     }
 
