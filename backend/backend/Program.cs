@@ -17,7 +17,7 @@ builder.Services.AddOpenApi();
 // CORS pre NextJS frontend
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0
 builder.Services.AddCors(opt =>
-    opt.AddPolicy("frontend", policy =>
+    opt.AddPolicy("frontend-development", policy =>
     {
         policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
             .AllowAnyHeader()
@@ -28,7 +28,7 @@ builder.Services.AddCors(opt =>
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjekt")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjektDb")));
 
 builder.Services.AddScoped<IQuestionsService, QuestionsService>();
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
@@ -92,7 +92,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-if (app.Environment.IsDevelopment()) { app.UseCors("frontend"); };
+if (app.Environment.IsDevelopment()) { app.UseCors("frontend-development"); };
 
 app.UseAuthentication();
 

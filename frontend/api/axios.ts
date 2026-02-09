@@ -1,7 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosInstance } from "axios";
 import { refreshToken } from "./auth";
 
-const BACKEND_ADDRESS = `https://localhost:7215/api`;
+const BACKEND_ADDRESS = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 
 
 const api: AxiosInstance = axios.create({
