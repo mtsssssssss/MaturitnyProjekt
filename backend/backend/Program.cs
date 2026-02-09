@@ -9,7 +9,7 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// builder.AddServiceDefaults();
+builder.AddServiceDefaults();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -71,7 +71,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-// app.MapDefaultEndpoints();
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
