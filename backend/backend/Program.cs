@@ -9,7 +9,7 @@ using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
+// builder.AddServiceDefaults();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -28,7 +28,7 @@ builder.Services.AddCors(opt =>
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjektDb")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjekt")));
 
 builder.Services.AddScoped<IQuestionsService, QuestionsService>();
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
@@ -64,7 +64,6 @@ builder.Services.AddAuthentication("Bearer")
 });
 
 
-
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
@@ -72,7 +71,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
-app.MapDefaultEndpoints();
+// app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {

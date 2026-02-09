@@ -15,7 +15,7 @@ var database = builder.AddPostgres("MaturitnyProjektPostgresDb", username, passw
         configureContainer.WithHostPort(8888);
         configureContainer.WithContainerName("MaturitnyProjektPgAdmin");
     })
-    .AddDatabase("MaturitnyProjektDb");
+    .AddDatabase("MaturitnyProjekt");
 
 builder.AddProject<Projects.backend>("backend")
     .WithReference(database)
