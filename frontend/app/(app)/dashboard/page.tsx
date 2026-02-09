@@ -12,11 +12,15 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { PageContent } from "@/lib/page-content";
 import { PageHeading } from "@/components/ui/page-heading";
 import { LayoutDashboard } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
-  const { userRole, isLoading } = useAuth();
+  const { userRole, isLoading, isAuthenticated } = useAuth();
+  const router = useRouter();
 
   if (isLoading) return <LoadingSpinner />;
+
+  if( !isAuthenticated ) return router.push("/login");
 
   const isTeacherOrAdmin = userRole === "Teacher" || userRole === "Admin";
   const isAdmin = userRole === "Admin";
