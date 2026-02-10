@@ -56,9 +56,15 @@ builder.Services.AddAuthentication("Bearer")
 {
     options.Events = new JwtBearerEvents
     {
-        OnMessageReceived = cntx =>
+        OnMessageReceived = context =>
         {
-            cntx.Token = cntx.Request.Cookies["access_token"];
+            if (context.Request.Method == HttpMethods.Options)
+                return Task.CompletedTask;
+
+            if (!context.Request.Cookies.ContainsKey("access_token"))
+                return Task.CompletedTask;
+
+            context.Token = context.Request.Cookies["access_token"];
             return Task.CompletedTask;
         }
     };
