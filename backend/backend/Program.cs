@@ -4,6 +4,7 @@ using backend.Middleware;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
@@ -14,17 +15,30 @@ builder.AddServiceDefaults();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+
 // CORS pre NextJS frontend
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0
-builder.Services.AddCors(opt =>
-    opt.AddPolicy("frontend-development", policy =>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend-development", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
+        policy
+            .WithOrigins("http://localhost:3000", "https://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
-    })
-);
+    });
+
+    options.AddPolicy("frontend-production", policy =>
+    {
+        policy
+            .WithOrigins("https://otestujsa.site", "https://www.otestujsa.site")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -93,6 +107,8 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 if (app.Environment.IsDevelopment()) { app.UseCors("frontend-development"); };
+
+if (app.Environment.IsProduction()) { app.UseCors("frontend-production"); };
 
 app.UseAuthentication();
 
