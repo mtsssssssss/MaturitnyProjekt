@@ -20,22 +20,16 @@ builder.Services.AddOpenApi();
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("frontend-development", policy =>
+    options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy
-            .WithOrigins("http://localhost:3000", "https://localhost:3000")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>();
 
-    options.AddPolicy("frontend-production", policy =>
-    {
-        policy
-            .WithOrigins("https://otestujsa.site", "https://www.otestujsa.site")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+        policy.WithOrigins(allowedOrigins!)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -112,9 +106,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-if (app.Environment.IsDevelopment()) { app.UseCors("frontend-development"); };
-
-if (app.Environment.IsProduction()) { app.UseCors("frontend-production"); };
+app.UseCors("FrontendPolicy");
 
 app.UseAuthentication();
 
