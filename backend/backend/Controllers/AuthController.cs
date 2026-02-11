@@ -86,7 +86,7 @@ public sealed class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddMinutes(15)    
         });
 
@@ -94,7 +94,7 @@ public sealed class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Strict,
             Expires = refreshExpiry
         });
     }
