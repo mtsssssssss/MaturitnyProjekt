@@ -14,7 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-
 // CORS pre NextJS frontend
 // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-9.0
 builder.Services.AddCors(options =>
@@ -31,7 +30,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -98,23 +96,7 @@ if (app.Environment.IsDevelopment())
     }
 }
 
-
-
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-9.0#middleware-order
-
-
-/*
-var forwardedOptions = new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor |
-                       ForwardedHeaders.XForwardedProto
-};
-
-forwardedOptions.KnownNetworks.Clear();
-forwardedOptions.KnownProxies.Clear();
-
-app.UseForwardedHeaders(forwardedOptions);
-*/
 
 app.UseHttpsRedirection();
 
