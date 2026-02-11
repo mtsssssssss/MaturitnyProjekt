@@ -246,7 +246,10 @@ using (var scope = app.Services.CreateScope())
 // 5. HttpsRedirection môe robi problémy ak proxy nerieši SSL správne,
 // ale ak máš ForwardedHeaders správne, malo by to by OK.
 // Ak ti to bude stále blbnú, skús tento riadok zakomentova na test.
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection(); // Nechaj to len pre lokálny vıvoj
+}
 
 app.UseRouting();
 
