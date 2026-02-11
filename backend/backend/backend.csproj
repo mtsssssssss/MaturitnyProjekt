@@ -35,10 +35,10 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
 	</ItemGroup>
 
-	<!-- -->
+	<!-- 
   <ItemGroup>
 	<ProjectReference Include="..\backend.ServiceDefaults\backend.ServiceDefaults.csproj" />
-  </ItemGroup>
+  </ItemGroup>-->
   
 
 	<ItemGroup>
