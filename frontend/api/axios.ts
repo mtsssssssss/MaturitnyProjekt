@@ -7,7 +7,7 @@ const BACKEND_ADDRESS = `${process.env.NEXT_PUBLIC_API_URL}/api`;
 const api: AxiosInstance = axios.create({
   baseURL: BACKEND_ADDRESS,
   timeout: 8000,
-  // headers: { "Content-Type": "application/json" },
+  headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
