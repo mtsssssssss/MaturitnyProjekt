@@ -46,6 +46,10 @@ export default function SubjectForm({ id }: { id?: string }) {
     validators: {
       onBlur: z.object({
         subjectAbbrev: z.string().length(3, "Skratka musí mať presne 3 znaky"),
+        subjectName: z.string()
+      }),
+      onChange:z.object({
+        subjectAbbrev: z.string(),
         subjectName: z.string().min(1, "Názov predmetu je povinný"),
       }),
     },
