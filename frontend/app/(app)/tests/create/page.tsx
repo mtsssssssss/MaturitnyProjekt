@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
@@ -78,13 +78,14 @@ export default function CreateTestPage() {
     },
   });
 
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  // const [selectedSubjectId, setSelectedSubjectId] = useState<string>("");
+  const selectedSubjectId = useStore(form.store, (state) => state.values.subjectId);
 
   const filteredQuestions = useMemo(() => {
     if (!questions) return [];
     if (!selectedSubjectId) return questions;
     return questions.filter((q) => q.subject.id === selectedSubjectId);
-  }, [questions, selectedSubjectId]);
+  }, [questions, selectedSubjectId]);    
 
   if (subjectsLoading || questionsLoading || usersLoading) {
     return (
