@@ -14,6 +14,7 @@ interface FormSelectProps {
   field: any;
   label: string;
   options?: Option[];
+  defaultValue? : string;
   placeholder?: string;
   description?: string;
 }
@@ -22,6 +23,7 @@ export const TanStackFormSelect = ({
   field,
   label,
   options,
+  defaultValue,
   placeholder,
   description,
 }: FormSelectProps) => {
@@ -39,7 +41,7 @@ export const TanStackFormSelect = ({
           id={field.name}
           className="w-full bg-white border-slate-200 focus:ring-orange-500 transition-all"
         >
-          <SelectValue placeholder={placeholder || "Vyberte možnosť"}  defaultValue={field.state.value?.toString() || ""}/>
+          <SelectValue placeholder={placeholder || "Vyberte možnosť"}  defaultValue={ defaultValue } />
         </SelectTrigger>
 
         <SelectContent>

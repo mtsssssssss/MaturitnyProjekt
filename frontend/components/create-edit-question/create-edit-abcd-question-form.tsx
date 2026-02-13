@@ -115,10 +115,11 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                       <TanStackFormSelect
                         field={field}
                         label="Predmet"
-                        options={subjectOptions || []}
+                        options={subjectOptions}
                         placeholder={
                           subjectsLoading ? "Načítavam..." : (questionData?.subject?.subjectName || "Vyberte predmet")
                         }
+                        defaultValue={questionData?.subject?.subjectName}
                       />
                     )}
                   />
