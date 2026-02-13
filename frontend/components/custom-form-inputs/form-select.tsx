@@ -27,7 +27,7 @@ export const TanStackFormSelect = ({
 }: FormSelectProps) => {
   return (
     <Field>
-      <FieldLabel htmlFor={field.name} className="font-semibold text-slate-700">
+      <FieldLabel htmlFor={field.name}>
         {label}
       </FieldLabel>
 
@@ -39,7 +39,7 @@ export const TanStackFormSelect = ({
           id={field.name}
           className="w-full bg-white border-slate-200 focus:ring-orange-500 transition-all"
         >
-          <SelectValue placeholder={placeholder || "Vyberte možnosť"} />
+          <SelectValue placeholder={placeholder || "Vyberte možnosť"}  defaultValue={field.state.value?.toString() || ""}/>
         </SelectTrigger>
 
         <SelectContent>
