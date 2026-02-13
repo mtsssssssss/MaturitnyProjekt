@@ -49,7 +49,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
   const form = useForm({
     defaultValues: {
       questionText: "",
-      subjectId: "",
+      subjectId: questionData?.subject?.id ?? "",
       questionType: 2,
       answer: "",
       abcdAnswers: [],
@@ -107,7 +107,6 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
                       label="Predmet"
                       options={subjectOptions}
                       placeholder={subjectsLoading ? "Načítavam..." : (questionData?.subject?.subjectName || "Vyberte predmet")}
-                      defaultValue={questionData?.subject?.subjectName}
                     />
                   )}
                 />

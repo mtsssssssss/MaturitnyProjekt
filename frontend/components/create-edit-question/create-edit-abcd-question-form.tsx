@@ -49,7 +49,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
   const form = useForm({
     defaultValues: {
       questionText: "",
-      subjectId: "",
+      subjectId: questionData?.subject?.id ?? "",
       questionType: 1, 
       abcdAnswers: [
         { answer: "", isRight: true },
@@ -119,7 +119,6 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                         placeholder={
                           subjectsLoading ? "Načítavam..." : (questionData?.subject?.subjectName || "Vyberte predmet")
                         }
-                        defaultValue={questionData?.subject?.subjectName}
                       />
                     )}
                   />
