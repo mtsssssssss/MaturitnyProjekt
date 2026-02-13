@@ -6,10 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { FieldGroup, FieldLabel } from "@/components/ui/field";
 import { TanStackFormInput } from "@/components/custom-form-inputs/form-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,13 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 import { getQuestions } from "@/api/questions";
@@ -39,6 +29,7 @@ import { QuestionResponse } from "@/types/api/questions";
 import { Subject } from "@/types/api/subjects";
 import { UserListItem } from "@/types/api/users";
 import { HelpCircle, ListChecks, Users } from "lucide-react";
+import { TanStackFormSelect } from "@/components/custom-form-inputs/form-select";
 
 export default function CreateTestPage() {
   const router = useRouter();
@@ -47,6 +38,12 @@ export default function CreateTestPage() {
     queryKey: ["subjects"],
     queryFn: getSubjects,
   });
+
+  const subjectOptions: Option[] | undefined = subjects?.map(subj => ({
+  key: subj.id,
+  value: subj.id,
+  text: subj.subjectName, 
+}));
 
   const { data: questions, isLoading: questionsLoading } = useQuery<
     QuestionResponse[]
@@ -109,23 +106,23 @@ export default function CreateTestPage() {
             Nakonfigurujte parametre a vyberte obsah testu.
           </p>
         </div>
-        
+
         <div className="flex gap-3 w-full md:w-auto">
-            <Button 
-              variant="outline" 
-              onClick={() => router.back()}
-              className="flex-1 md:flex-none cursor-pointer"
-            >
-                Zrušiť
-            </Button>
-            <Button 
-              size="lg" 
-              onClick={() => form.handleSubmit()} 
-              disabled={mutation.isPending}
-              className="flex-1 md:flex-none shadow-lg bg-primary hover:bg-primary/90 cursor-pointer"
-            >
-              {mutation.isPending ? "Ukladám..." : "Vytvoriť test teraz"}
-            </Button>
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="flex-1 md:flex-none cursor-pointer"
+          >
+            Zrušiť
+          </Button>
+          <Button
+            size="lg"
+            onClick={() => form.handleSubmit()}
+            disabled={mutation.isPending}
+            className="flex-1 md:flex-none shadow-lg bg-primary hover:bg-primary/90 cursor-pointer"
+          >
+            {mutation.isPending ? "Ukladám..." : "Vytvoriť test teraz"}
+          </Button>
         </div>
       </div>
 
@@ -143,21 +140,34 @@ export default function CreateTestPage() {
                 <form.Field
                   name="testName"
                   children={(field) => (
-                    <TanStackFormInput field={field} label="Názov testu" placeholder="Napr. Záverečná skúška" />
+                    <TanStackFormInput
+                      field={field}
+                      label="Názov testu"
+                      placeholder="Napr. Záverečná skúška"
+                    />
                   )}
                 />
                 <form.Field
                   name="testDescription"
                   children={(field) => (
-                    <TanStackFormInput field={field} label="Popis" placeholder="Info pre študentov" />
+                    <TanStackFormInput
+                      field={field}
+                      label="Popis"
+                      placeholder="Info pre študentov"
+                    />
                   )}
                 />
                 <form.Field
                   name="timeLimitMinutes"
                   children={(field) => (
-                    <TanStackFormInput field={field} type="number" label="Časový limit (min)" />
+                    <TanStackFormInput
+                      field={field}
+                      type="number"
+                      label="Časový limit (min)"
+                    />
                   )}
                 />
+                {/*
                 <form.Field
                   name="subjectId"
                   children={(field) => (
@@ -178,6 +188,13 @@ export default function CreateTestPage() {
                       </Select>
                     </FieldGroup>
                   )}
+                />                
+
+                */}
+
+                <form.Field
+                  name="subjectId"
+                  children={(field) => <TanStackFormSelect field={field} label="Predmet" placeholder="Vyberte predmet" options={subjectOptions} />}
                 />
               </form>
             </CardContent>
@@ -187,8 +204,8 @@ export default function CreateTestPage() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold flex items-center gap-2">
-              <HelpCircle className="h-5 w-5 text-primary" /> 
-              Výber otázok 
+              <HelpCircle className="h-5 w-5 text-primary" />
+              Výber otázok
               <span className="text-sm font-normal text-muted-foreground ml-2">
                 ({filteredQuestions.length} dostupných)
               </span>
@@ -200,7 +217,9 @@ export default function CreateTestPage() {
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
                     <TableRow>
-                      <TableHead className="w-[50px] text-center px-4">Vybrať</TableHead>
+                      <TableHead className="w-[50px] text-center px-4">
+                        Vybrať
+                      </TableHead>
                       <TableHead className="w-[100px]">Typ</TableHead>
                       <TableHead className="w-[150px]">Kategória</TableHead>
                       <TableHead>Text otázky</TableHead>
@@ -208,27 +227,55 @@ export default function CreateTestPage() {
                   </TableHeader>
                   <TableBody>
                     <form.Field name="questionIds" mode="array">
-                      {(field) => filteredQuestions.map((q) => {
-                        const isSelected = field.state.value.includes(q.id);
-                        return (
-                          <TableRow 
-                            key={q.id}
-                            className={`hover:bg-muted/30 transition-colors cursor-pointer ${isSelected ? "bg-primary/5 hover:bg-primary/10" : ""}`}
-                            onClick={() => isSelected ? field.setValue(field.state.value.filter(id => id !== q.id)) : field.pushValue(q.id)}
-                          >
-                            <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                              <Checkbox checked={isSelected} onCheckedChange={(c) => c ? field.pushValue(q.id) : field.setValue(field.state.value.filter(id => id !== q.id))} />
-                            </TableCell>
-                            <TableCell>
+                      {(field) =>
+                        filteredQuestions.map((q) => {
+                          const isSelected = field.state.value.includes(q.id);
+                          return (
+                            <TableRow
+                              key={q.id}
+                              className={`hover:bg-muted/30 transition-colors cursor-pointer ${isSelected ? "bg-primary/5 hover:bg-primary/10" : ""}`}
+                              onClick={() =>
+                                isSelected
+                                  ? field.setValue(
+                                      field.state.value.filter(
+                                        (id) => id !== q.id,
+                                      ),
+                                    )
+                                  : field.pushValue(q.id)
+                              }
+                            >
+                              <TableCell
+                                className="text-center"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(c) =>
+                                    c
+                                      ? field.pushValue(q.id)
+                                      : field.setValue(
+                                          field.state.value.filter(
+                                            (id) => id !== q.id,
+                                          ),
+                                        )
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell>
                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-background uppercase">
-                                    {q.questionType}
+                                  {q.questionType}
                                 </span>
-                            </TableCell>
-                            <TableCell className="text-muted-foreground text-sm">{q.subject.subjectAbbrev}</TableCell>
-                            <TableCell className="font-medium">{q.questionText}</TableCell>
-                          </TableRow>
-                        )
-                      })}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground text-sm">
+                                {q.subject.subjectAbbrev}
+                              </TableCell>
+                              <TableCell className="font-medium">
+                                {q.questionText}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      }
                     </form.Field>
                   </TableBody>
                 </Table>
@@ -239,7 +286,7 @@ export default function CreateTestPage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-bold flex items-center gap-2">
-            <Users className="h-5 w-5 text-primary" /> 
+            <Users className="h-5 w-5 text-primary" />
             Priradenie študentov
           </h2>
           <Card className="shadow-sm border-muted overflow-hidden">
@@ -248,7 +295,9 @@ export default function CreateTestPage() {
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-20 shadow-sm">
                     <TableRow>
-                      <TableHead className="w-[50px] text-center px-4">Vybrať</TableHead>
+                      <TableHead className="w-[50px] text-center px-4">
+                        Vybrať
+                      </TableHead>
                       <TableHead>Celé meno</TableHead>
                       <TableHead>Username</TableHead>
                       <TableHead className="text-right">Rola</TableHead>
@@ -256,23 +305,53 @@ export default function CreateTestPage() {
                   </TableHeader>
                   <TableBody>
                     <form.Field name="assignedUserIds" mode="array">
-                      {(field) => users?.map((u) => {
-                        const isSelected = field.state.value.includes(u.id);
-                        return (
-                          <TableRow 
-                            key={u.id}
-                            className={`hover:bg-muted/30 transition-colors cursor-pointer ${isSelected ? "bg-primary/5 hover:bg-primary/10" : ""}`}
-                            onClick={() => isSelected ? field.setValue(field.state.value.filter(id => id !== u.id)) : field.pushValue(u.id)}
-                          >
-                            <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                              <Checkbox checked={isSelected} onCheckedChange={(c) => c ? field.pushValue(u.id) : field.setValue(field.state.value.filter(id => id !== u.id))} />
-                            </TableCell>
-                            <TableCell className="font-bold">{u.firstName} {u.lastName}</TableCell>
-                            <TableCell className="text-muted-foreground">@{u.username}</TableCell>
-                            <TableCell className="text-right text-xs uppercase font-mono">{u.role}</TableCell>
-                          </TableRow>
-                        )
-                      })}
+                      {(field) =>
+                        users?.map((u) => {
+                          const isSelected = field.state.value.includes(u.id);
+                          return (
+                            <TableRow
+                              key={u.id}
+                              className={`hover:bg-muted/30 transition-colors cursor-pointer ${isSelected ? "bg-primary/5 hover:bg-primary/10" : ""}`}
+                              onClick={() =>
+                                isSelected
+                                  ? field.setValue(
+                                      field.state.value.filter(
+                                        (id) => id !== u.id,
+                                      ),
+                                    )
+                                  : field.pushValue(u.id)
+                              }
+                            >
+                              <TableCell
+                                className="text-center"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(c) =>
+                                    c
+                                      ? field.pushValue(u.id)
+                                      : field.setValue(
+                                          field.state.value.filter(
+                                            (id) => id !== u.id,
+                                          ),
+                                        )
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell className="font-bold">
+                                {u.firstName} {u.lastName}
+                              </TableCell>
+                              <TableCell className="text-muted-foreground">
+                                @{u.username}
+                              </TableCell>
+                              <TableCell className="text-right text-xs uppercase font-mono">
+                                {u.role}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })
+                      }
                     </form.Field>
                   </TableBody>
                 </Table>
@@ -282,23 +361,26 @@ export default function CreateTestPage() {
         </section>
 
         <div className="flex justify-end items-center gap-4 py-6 border-t">
-            <form.Subscribe
-              selector={(state) => [state.values.questionIds.length, state.values.assignedUserIds.length]}
-              children={([questionCount, studentCount]) => (
-                <span className="text-sm text-muted-foreground hidden sm:inline">
-                  Vybraných otázok: <strong>{questionCount}</strong> | 
-                  Študentov: <strong>{studentCount}</strong>
-                </span>
-              )}
-            />
-            <Button
-                size="lg"
-                className="w-full md:w-[300px] text-lg font-bold cursor-pointer"
-                onClick={() => form.handleSubmit()}
-                disabled={mutation.isPending}
-            >
-                {mutation.isPending ? "Vytváram..." : "Potvrdiť a uložiť"}
-            </Button>
+          <form.Subscribe
+            selector={(state) => [
+              state.values.questionIds.length,
+              state.values.assignedUserIds.length,
+            ]}
+            children={([questionCount, studentCount]) => (
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                Vybraných otázok: <strong>{questionCount}</strong> | Študentov:{" "}
+                <strong>{studentCount}</strong>
+              </span>
+            )}
+          />
+          <Button
+            size="lg"
+            className="w-full md:w-[300px] text-lg font-bold cursor-pointer"
+            onClick={() => form.handleSubmit()}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Vytváram..." : "Potvrdiť a uložiť"}
+          </Button>
         </div>
       </div>
     </div>

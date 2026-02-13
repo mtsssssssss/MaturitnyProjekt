@@ -1,4 +1,3 @@
-import { FieldApi } from "@tanstack/react-form";
 import { FieldInfo } from "./field-info";
 import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import {
@@ -10,11 +9,6 @@ import {
   SelectValue,
 } from "../ui/select";
 
-interface Option {
-  key: string;
-  value: string | number;
-  text: string;
-}
 
 interface FormSelectProps {
   field: any;
