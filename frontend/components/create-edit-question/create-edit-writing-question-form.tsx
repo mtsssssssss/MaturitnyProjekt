@@ -107,6 +107,7 @@ export default function QuestionWritingForm({ id }: { id?: string }) {
                       label="Predmet"
                       options={subjectOptions}
                       placeholder={subjectsLoading ? "Načítavam..." : (questionData?.subject?.subjectName || "Vyberte predmet")}
+                      
                     />
                   )}
                 />

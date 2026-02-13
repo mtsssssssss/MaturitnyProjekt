@@ -110,10 +110,7 @@ export default function QuestionAbcdForm({ id }: { id?: string }) {
                 <div className="md:col-span-1">
                   <form.Field
                     name="subjectId"
-                    validators={{
-                      onChange: ({ value }) =>
-                        !value ? "Vyberte predmet" : undefined,
-                    }}
+                    
                     children={(field) => (
                       <TanStackFormSelect
                         field={field}
