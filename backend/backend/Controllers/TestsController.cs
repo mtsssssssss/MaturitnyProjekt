@@ -84,8 +84,9 @@ public class TestsController : ControllerBase
     [Authorize(Roles = "Teacher,Admin")]
     public async Task<ActionResult<List<StudentAttemptResultListItemDto>>> GetStudentAttempts()
     {
-        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var result = await testsService.GetStudentAttemptsAsync(userId);
+        // var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        // var result = await testsService.GetStudentAttemptsAsync(userId);
+        var result = await testsService.GetStudentAttemptsAsync();
         return Ok(result);
     }
 

@@ -8,7 +8,9 @@ public interface ITestsService
     Task<CreateManualTestResponseDto> CreateManualTestAsync(Guid creatorUserId, CreateManualTestDto dto);
     Task<List<AssignedTestListItemDto>> GetAssignedTestsAsync(Guid userId);
     Task<List<AttemptResultListItemDto>> GetMyAttemptsAsync(Guid userId);
-    Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync(Guid teacherUserId);
+
+    // Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync(Guid teacherUserId);
+    Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync();
     Task<StartTestResponseDto> StartTest(Guid userId, Guid testId);
     Task<bool> SubmitAnswer(Guid userId, SubmitAnswerDto dto);
     Task<FinishTestResponseDto> FinishTest(Guid userId, FinishTestDto dto);

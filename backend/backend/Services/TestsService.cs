@@ -163,12 +163,15 @@ public class TestsService : ITestsService
         return attempts;
     }
 
-    public async Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync(Guid teacherUserId)
+    // public async Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync(Guid teacherUserId)
+    public async Task<List<StudentAttemptResultListItemDto>> GetStudentAttemptsAsync()
     {
+        //.Where(a => a.TestStatus == TestStatus.Finished && a.Test.CreatedByUserId == teacherUserId) // DOKONCIT AK BUDE CAS
+
         var attempts = await dbContext.TestAttempts
             .Include(a => a.Test).ThenInclude(t => t.Subject)
             .Include(a => a.User)
-            .Where(a => a.TestStatus == TestStatus.Finished && a.Test.CreatedByUserId == teacherUserId)
+            .Where(a => a.TestStatus == TestStatus.Finished) // PREROBENY RIADOK
             .OrderByDescending(a => a.TestFinished)
             .Select(a => new StudentAttemptResultListItemDto
             {
