@@ -1,1 +1,0 @@
-davat pozor na redeploy program.cs pretoze tam includujem aspire co v prod nechecm
