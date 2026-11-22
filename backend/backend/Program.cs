@@ -31,9 +31,9 @@ builder.Services.AddCors(options =>
     });
 });
 
-
+var connectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("MaturitnyProjekt")));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IQuestionsService, QuestionsService>();
 builder.Services.AddScoped<ISubjectsService, SubjectsService>();
